@@ -1,2 +1,2 @@
 
-Useful tool for PhotoKit to boost your productivity.
+Useful tool for PhotoKit framework to boost your productivity.
