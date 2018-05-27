@@ -31,10 +31,10 @@ public class PhotoAlbumModel {
         self.fetchResult = PHAsset.fetchAssets(in: self.assetCollection, options: options)
         
         var array = [PhotoAssetModel]()
-        self.fetchResult.enumerateObjects { (asset, idx, stop) in
+        self.fetchResult.enumerateObjects( { (asset, idx, stop) in
             let photoAssetModel = PhotoAssetModel.init(asset)
             array.append(photoAssetModel)
-        }
+        })
         self.photoAssets = array
     }
 }

@@ -19,7 +19,7 @@ class PhotoAssetsView: UIView {
     public weak var delegate: PhotoAssetsViewDelegate?
     
     // album
-    private var photoAlbum: PhotoAlbumModel
+    fileprivate var photoAlbum: PhotoAlbumModel
     
     // cell count of one line
     private let cellCountOfLine: Int

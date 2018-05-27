@@ -46,7 +46,7 @@ public class PhotoAssetModel {
         return self.imageRequestIdInCloud != PHInvalidImageRequestID
     }
     
-    private var imageRequestIdInCloud: PHImageRequestID = PHInvalidImageRequestID
+    fileprivate var imageRequestIdInCloud: PHImageRequestID = PHInvalidImageRequestID
     
     public init(_ asset: PHAsset) {
         self.asset = asset
