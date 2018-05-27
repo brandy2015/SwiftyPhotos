@@ -25,7 +25,7 @@ public class PhotoAssetModel {
         return CGSize(width: self.asset.pixelWidth, height: self.asset.pixelHeight)
     }
     
-    private var isLocallyAvailable = false
+    fileprivate var isLocallyAvailable = false
     public var isInCloud: Bool {
         if self.isLocallyAvailable {
             return false
