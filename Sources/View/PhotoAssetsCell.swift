@@ -11,25 +11,25 @@ import Photos
 
 class PhotoAssetsCell: UICollectionViewCell {
     
-    // 通过identifier防止cell复用时thumbnail错乱
-    var assetLocalIdentifier = ""
-    var imageRequestID: PHImageRequestID!
-    var photoAsset: PhotoAssetModel! {
-        willSet {
-            imageRequestID = SwiftyPhotos.shared
-                .requestThumbnailForAsset(asset: newValue.asset) {
-                    [weak self] (image, info) in
-                    guard let image = image else { return }
-                    guard let sself = self else { return }
-                    
-                    DispatchQueue.main.async {
-                        sself.thumbnail.image = image
+    public var imageRequestID: PHImageRequestID?
+    
+    public var photoAsset: PhotoAssetModel! {
+        didSet {
+            self.imageRequestID = self.photoAsset.requestThumbnail(resultHandler: { (image, info) in
+                DispatchQueue.main.async {
+                    if let info = info {
+                        if let requestID = info[PHImageResultRequestIDKey] as? NSNumber {
+                            if requestID.int32Value == self.imageRequestID {
+                                self.thumbnail.image = image
+                            }
+                        }
                     }
-            }
+                }
+            })
         }
     }
     
-    lazy var thumbnail: UIImageView = {
+    private lazy var thumbnail: UIImageView = {
         let iv = UIImageView(frame: self.bounds)
         iv.contentMode = .scaleAspectFill
         return iv
@@ -38,19 +38,12 @@ class PhotoAssetsCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        setupUI()
+        self.backgroundColor = UIColor.white
+        self.clipsToBounds = true
+        self.addSubview(self.thumbnail)
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-}
-
-// MARK: - setupUI
-extension PhotoAssetsCell {
-    func setupUI() {
-        backgroundColor = UIColor.white
-        clipsToBounds = true
-        addSubview(thumbnail)
     }
 }

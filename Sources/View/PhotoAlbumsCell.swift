@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Photos
 
 class PhotoAlbumsCell: UITableViewCell {
 
@@ -14,33 +15,33 @@ class PhotoAlbumsCell: UITableViewCell {
     @IBOutlet weak var lbTitle: UILabel!
     @IBOutlet weak var lbCount: UILabel!
     
-    var albumModel: PhotoAlbumModel! {
+    public var imageRequestID: PHImageRequestID?
+    
+    public var albumModel: PhotoAlbumModel! {
         didSet {
-            lbTitle.text = albumModel.name
-            lbCount.text = "\(albumModel.photosCount)"
-            
-            
-            DispatchQueue.global().async {
-                _ = SwiftyPhotos.shared.requestThumbnailForAsset(asset: self.albumModel.thumbnail) { (image, info) in
-                    DispatchQueue.main.async {
-                        self.iconView.image = image
+            DispatchQueue.main.async {
+                self.lbTitle.text = self.albumModel.name
+                self.lbCount.text = "\(self.albumModel.photoAssets.count)"
+            }
+        
+            self.imageRequestID = self.albumModel.lastPhotoAsset?.requestThumbnail(resultHandler: { (image, info) in
+                DispatchQueue.main.async {
+                    if let info = info {
+                        if let requestID = info[PHImageResultRequestIDKey] as? NSNumber {
+                            if requestID.int32Value == self.imageRequestID {
+                                self.iconView.image = image
+                            }
+                        }
                     }
                 }
-            }
+            })
         }
     }
     
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        setupUI()
-    }
-}
-
-// MARK: - setupUI
-extension PhotoAlbumsCell {
-    func setupUI() {
-        backgroundColor = UIColor.white
-        isExclusiveTouch = true
+        self.backgroundColor = UIColor.white
+        self.isExclusiveTouch = true
     }
 }

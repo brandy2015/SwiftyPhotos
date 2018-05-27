@@ -10,16 +10,15 @@ import UIKit
 
 
 protocol PhotoAlbumsViewDelegate: class {
-    func PhotoAlbumsViewClose()
-    func PhotoAlbumsViewDidSelectAlbum(_ albumModel: PhotoAlbumModel)
+    func PhotoAlbumsViewDidSelectPhotoAlbum(_ photoAlbum: PhotoAlbumModel)
 }
 
 
 class PhotoAlbumsView: UIView {
 
-    weak var delegate: PhotoAlbumsViewDelegate?
+    public weak var delegate: PhotoAlbumsViewDelegate?
     
-    lazy var tableView: UITableView = {
+    private lazy var tableView: UITableView = {
         let tableView: UITableView = UITableView(frame: self.bounds, style: .plain)
         
         tableView.register(UINib(nibName: "PhotoAlbumsCell", bundle: nil), forCellReuseIdentifier: "PhotoAlbumsCell")
@@ -33,7 +32,7 @@ class PhotoAlbumsView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        addSubview(tableView)
+        self.addSubview(self.tableView)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -44,12 +43,13 @@ class PhotoAlbumsView: UIView {
 
 extension PhotoAlbumsView: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return SwiftyPhotos.shared.allAlbums.count
+        return SwiftyPhotos.shared.allPhotoAlbums.count
     }
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "PhotoAlbumsCell", for: indexPath) as! PhotoAlbumsCell
         
-        let cell: PhotoAlbumsCell = tableView.dequeueReusableCell(withIdentifier: "PhotoAlbumsCell", for: indexPath) as! PhotoAlbumsCell
-        cell.albumModel = SwiftyPhotos.shared.allAlbums[indexPath.row]
+        cell.albumModel = SwiftyPhotos.shared.allPhotoAlbums[indexPath.row]
         
         return cell
     }
@@ -57,7 +57,9 @@ extension PhotoAlbumsView: UITableViewDataSource {
 
 extension PhotoAlbumsView: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let albumModel = SwiftyPhotos.shared.allAlbums[indexPath.row]
-        delegate?.PhotoAlbumsViewDidSelectAlbum(albumModel)
+        if let delegate = self.delegate {
+            let photoAlbum = SwiftyPhotos.shared.allPhotoAlbums[indexPath.row]
+            delegate.PhotoAlbumsViewDidSelectPhotoAlbum(photoAlbum)
+        }
     }
 }

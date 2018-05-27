@@ -9,162 +9,125 @@
 import UIKit
 import Photos
 
+
+public typealias ResultHandlerOfPhotoOperation = (Bool, Error?) -> Void
+public typealias ResultHandlerOfPhotoAuthrization = (Bool) -> Void
+
+
+fileprivate let AlbumsOfIOS = ["All Photos", "Camera Roll", "Selfies", "Screenshots", "Favorites", "Panoramas", "Recently Added"]
+fileprivate let AlbumsOfAllPhotos = ["All Photos", "Camera Roll"]
+
+
 public class SwiftyPhotos {
+    public var isPhotoAuthorized = false
     
-    public var isAllPhotosExisting = false
-    
-    public var allAlbums   = Array<PhotoAlbumModel>()
-    public var allAssets: Array<PhotoAssetModel> {
-        get {
-            var assets = Array<PhotoAssetModel>()
-            
-            var assetCollection: PHAssetCollection?
-            let cameraRollResult = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: nil)
-            cameraRollResult.enumerateObjects(_:) { (collection, idx, stop) in
-                if collection.assetCollectionSubtype != .albumCloudShared ||
-                    collection.assetCollectionSubtype != .smartAlbumPanoramas {
-                    
-                    if let title = collection.localizedTitle {
-                        let allAssetsTitle = self.isAllPhotosExisting ? "All Photos" : "Camera Roll"
-                        if title == allAssetsTitle {
-                            assetCollection = collection
-                            stop.initialize(to: true)
-                        }
-                    }
-                }
+    public var allPhotoAlbums = [PhotoAlbumModel]()
+    public var allPhotoAssets: [PhotoAssetModel] {
+        for (_, photoAlbum) in self.allPhotoAlbums.enumerated() {
+            if AlbumsOfAllPhotos.contains(photoAlbum.name) {
+                return photoAlbum.photoAssets
             }
-            
-            if let assetCollection = assetCollection {
-                let fetchResult: PHFetchResult<PHAsset> = PHAsset.fetchAssets(in: assetCollection, options: nil)
-                fetchResult.enumerateObjects(_:) { (asset, idx, stop) in
-                    let photoAssetModel = PhotoAssetModel()
-                    photoAssetModel.asset = asset
-                    
-                    assets.append(photoAssetModel)
-                }
-            }
-            
-            return assets
         }
-        set {
-        
-        }
+        return [PhotoAssetModel]()
     }
     
     private static let sharedInstance = SwiftyPhotos()
     public class var shared: SwiftyPhotos {
-        if sharedInstance.allAlbums.count == 0 {
-            sharedInstance.syncAlbums()
-        }
         return sharedInstance
-    }
-    
-    public func reset() {
-        allAlbums.removeAll()
-        allAssets.removeAll()
     }
 }
 
 extension SwiftyPhotos {
-    func syncAlbums() {
-        let options = PHFetchOptions()
-        options.sortDescriptors = [NSSortDescriptor(key:"endDate", ascending: false)]
-        options.predicate = NSPredicate(format: "estimatedAssetCount>0")
-        
-        let cameraRollResult = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: nil)
-        let userAlbums = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .any, options: options)
-        
-        let handleAssetCollection = { (assetCollection: PHAssetCollection, isCameraRoll: Bool) in
-            
+    public func reloadAll(resultHandler: @escaping ResultHandlerOfPhotoAuthrization) {
+        self.requestAuthorization { (isPhotoAuthorized) in
+            if isPhotoAuthorized {
+                self._reloadAll()
+            }
+            resultHandler(isPhotoAuthorized)
+        }
+    }
+    
+    private func requestAuthorization(resultHandler: @escaping ResultHandlerOfPhotoAuthrization) {
+        switch PHPhotoLibrary.authorizationStatus() {
+        case .notDetermined:
+            PHPhotoLibrary.requestAuthorization { (authorizationStatus) in
+                if authorizationStatus == .authorized {
+                    resultHandler(true)
+                } else {
+                    resultHandler(false)
+                }
+            }
+            break
+        case .restricted, .denied:
+            print("authorizationStatus denied")
+            resultHandler(false)
+            break
+        case .authorized:
+            resultHandler(true)
+        }
+    }
+    
+    private func _reloadAll() {
+        let handleAssetCollection = { (assetCollection: PHAssetCollection) in
             let options = PHFetchOptions()
             options.predicate = NSPredicate(format: "mediaType=1")
             
-            let photos = PHAsset.fetchAssets(in: assetCollection, options: options)
-            if photos.count > 0 {
-                let albumModel              = PhotoAlbumModel()
-                albumModel.assetCollection  = assetCollection
-                albumModel.fetchResult      = photos
-                albumModel.isCameraRoll     = isCameraRoll
-                
-                if assetCollection.assetCollectionType == .smartAlbum &&
-                    assetCollection.assetCollectionSubtype == .smartAlbumUserLibrary {
-                    var isExisting = false
-                    for album: PhotoAlbumModel in self.allAlbums {
-                        if album.name == albumModel.name {
-                            isExisting = true
-                        }
-                    }
-                    if !isExisting {
-                        self.allAlbums.insert(albumModel, at: 0)
-                    }
+            let photoAlbum = PhotoAlbumModel.init(assetCollection)
+            if photoAlbum.photoAssets.count > 0 {
+                if AlbumsOfAllPhotos.contains(photoAlbum.name) {
+                    self.allPhotoAlbums.insert(photoAlbum, at: 0)
                 } else {
-                    var isExisting = false
-                    for album: PhotoAlbumModel in self.allAlbums {
-                        if album.name == albumModel.name {
-                            isExisting = true
-                        }
-                    }
-                    if !isExisting {
-                        self.allAlbums.append(albumModel)
-                    }
+                    self.allPhotoAlbums.append(photoAlbum)
                 }
             }
         }
         
-        cameraRollResult.enumerateObjects(_:) { (assetCollection, idx, stop) in
-            if assetCollection.assetCollectionSubtype != .albumCloudShared ||
-                assetCollection.assetCollectionSubtype != .smartAlbumPanoramas {
-                handleAssetCollection(assetCollection, true)
-            }
-        }
-        userAlbums.enumerateObjects(_:) { (assetCollection, idx, stop) in
-            if assetCollection.assetCollectionSubtype != .albumCloudShared ||
-                assetCollection.assetCollectionSubtype != .smartAlbumPanoramas {
-                handleAssetCollection(assetCollection, false)
+        let smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: nil)
+        smartAlbums.enumerateObjects(_:) { (assetCollection, idx, stop) in
+            if let albumName = assetCollection.localizedTitle {
+                if AlbumsOfIOS.contains(albumName) {
+                    handleAssetCollection(assetCollection)
+                }
             }
         }
         
-        // 解决部分机型没有All Photos，而是Camera Roll的问题
-        for albumModel in allAlbums {
-            if albumModel.name == "All Photos" {
-                isAllPhotosExisting = true
-                break
-            } else {
-                isAllPhotosExisting = false
-            }
+        let albums = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .albumRegular, options: nil)
+        albums.enumerateObjects(_:) { (assetCollection, idx, stop) in
+            handleAssetCollection(assetCollection)
         }
     }
 }
 
-// MARK: - 操作相册
+// MARK: - Album
+
 extension SwiftyPhotos {
-    func isAlbumExisting(_ albumName: String) -> Bool {
-        var isAlbumExisting = false
-        
-        let topLevelUserCollections = PHCollectionList.fetchTopLevelUserCollections(with: nil)
-        topLevelUserCollections.enumerateObjects(_:) { (assetCollection, idx, stop) in
-            if assetCollection.localizedTitle == albumName {
-                stop.initialize(to: true)
-                isAlbumExisting = true
+    public func photoAlbumWithName(_ albumName: String) -> PhotoAlbumModel? {
+        for (_, photoAlbum) in self.allPhotoAlbums.enumerated() {
+            if photoAlbum.name == albumName {
+                return photoAlbum
             }
         }
-        
-        return isAlbumExisting
+        return nil
     }
     
-    func createAlbum(_ albumName: String) -> Bool {
-        var isCreationSuccess = false
+    public func createAlbum(_ albumName: String) -> Bool {
+        if let _ = self.photoAlbumWithName(albumName) {
+            print("already existing album")
+            return false
+        }
+        
+        var isAlbumCreated = false
         
         let semaphore = DispatchSemaphore(value: 0)
         
         PHPhotoLibrary.shared().performChanges({
             PHAssetCollectionChangeRequest.creationRequestForAssetCollection(withTitle: albumName)
-        }) { (success, error) in
-            if success == true {
-                isCreationSuccess = true
+        }) { (isSuccess, error) in
+            if isSuccess == true {
                 print("success to create album : \(albumName)")
+                isAlbumCreated = true
             } else {
-                print("failed to create album : \(albumName). \(String(describing: error))")
+                print("fail to create album : \(albumName). \(String(describing: error))")
             }
             
             semaphore.signal()
@@ -172,131 +135,22 @@ extension SwiftyPhotos {
         
         _ = semaphore.wait(timeout: .distantFuture)
         
-        return isCreationSuccess
-    }
-    
-    func albumByName(_ albumName: String) -> PhotoAlbumModel? {
-        for albumModel: PhotoAlbumModel in allAlbums {
-            if albumModel.name == albumName {
-                return albumModel
-            }
-        }
-        
-        return nil
-    }
-    
-    func assetCollectionByName(_ collectionName: String) -> PHAssetCollection? {
-        var album: PHAssetCollection?
-        
-        let topLevelUserCollections = PHCollectionList.fetchTopLevelUserCollections(with: nil)
-        topLevelUserCollections.enumerateObjects(_:) { (assetCollection, idx, stop) in
-            if assetCollection.localizedTitle == collectionName {
-                stop.initialize(to: true)
-                album = assetCollection as? PHAssetCollection
-            }
-        }
-        return album
-    }
-    
-    func photoAssetsByAlbumModel(_ albumModel: PhotoAlbumModel) -> Array<PhotoAssetModel> {
-        if albumModel.name == allAlbums.first?.name {
-            return allAssets
-        }
-        
-        var photoAssets = Array<PhotoAssetModel>()
-        
-        let fetchResult: PHFetchResult<PHAsset> = PHAsset.fetchAssets(in: albumModel.assetCollection, options: nil)
-        fetchResult.enumerateObjects({ (asset, idx, stop) in
-            let photoAssetModel = PhotoAssetModel()
-            photoAssetModel.asset = asset
-            
-            photoAssets.append(photoAssetModel)
-        })
-        
-        return photoAssets
+        return isAlbumCreated
     }
 }
 
-// MARK: - 请求照片
-extension SwiftyPhotos {
-    
-    // 缩略图
-    @discardableResult
-    func requestThumbnailForAsset(asset: PHAsset, resultHandler: @escaping (UIImage?, [AnyHashable : Any]?) -> Swift.Void) -> PHImageRequestID {
-        let options = PHImageRequestOptions()
-        // 仅request指定尺寸image，不需要更小的缩略图
-        options.isSynchronous = true
-        return requestImageForAsset(asset: asset, targetSize: CGSize(width:256, height:256), contentMode: .aspectFit, options: options, resultHandler: resultHandler)
-    }
-    
-    // 全尺寸
-    @discardableResult
-    func requestFullSizeImageForAsset(asset: PHAsset, resultHandler: @escaping (UIImage?, [AnyHashable : Any]?) -> Swift.Void) -> PHImageRequestID {
-        return requestImageForAsset(asset: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: nil, resultHandler: resultHandler)
-    }
-    
-    @discardableResult
-    func requestFullSizeImageForAssetLocalIdentifier(_ localIdentifier: String, resultHandler: @escaping (UIImage?, [AnyHashable : Any]?) -> Swift.Void) -> PHImageRequestID {
-        let assets = PHAsset.fetchAssets(withLocalIdentifiers: [localIdentifier], options: nil)
-        if assets.count == 0 { return PHInvalidImageRequestID }
-        guard let asset = assets.firstObject else { return PHInvalidImageRequestID }
-        return requestFullSizeImageForAsset(asset: asset, resultHandler: resultHandler)
-    }
-    
-    // 屏幕尺寸
-    @discardableResult
-    func requestScreenSizeImageForAsset(asset: PHAsset, resultHandler: @escaping (UIImage?, [AnyHashable : Any]?) -> Swift.Void) -> PHImageRequestID? {
-        let size = CGSize(width: UIScreen.main.bounds.width * 4,
-                          height: UIScreen.main.bounds.height * 4)
-        
-        let options = PHImageRequestOptions()
-        // 仅request指定尺寸image，不需要更小的缩略图
-        options.isSynchronous = true
-        return requestImageForAsset(asset: asset, targetSize: size, contentMode: .aspectFit, options: options, resultHandler: resultHandler)
-    }
-    
-    @discardableResult
-    func requestScreenSizeImageForAssetLocalIdentifier(_ localIdentifier: String, resultHandler: @escaping (UIImage?, [AnyHashable : Any]?) -> Swift.Void) -> PHImageRequestID? {
-        let assets = PHAsset.fetchAssets(withLocalIdentifiers: [localIdentifier], options: nil)
-        if assets.count == 0 { return PHInvalidImageRequestID }
-        guard let asset = assets.firstObject else { return PHInvalidImageRequestID }
-        return requestScreenSizeImageForAsset(asset: asset, resultHandler: resultHandler)
-    }
-    
-    @discardableResult
-    func requestThumbnailForAssetLocalIdentifier(_ localIdentifier: String, resultHandler: @escaping (UIImage?, [AnyHashable : Any]?) -> Swift.Void) -> PHImageRequestID {
-        let assets = PHAsset.fetchAssets(withLocalIdentifiers: [localIdentifier], options: nil)
-        if assets.count == 0 { return PHInvalidImageRequestID }
-        guard let asset = assets.firstObject else { return PHInvalidImageRequestID }
-        return requestThumbnailForAsset(asset: asset, resultHandler: resultHandler)
-    }
-    
-    @discardableResult
-    func requestImageForAsset(asset: PHAsset, targetSize: CGSize, contentMode: PHImageContentMode, options: PHImageRequestOptions?, resultHandler: @escaping (UIImage?, [AnyHashable : Any]?) -> Swift.Void) -> PHImageRequestID {
-        return PHImageManager.default().requestImage(for: asset, targetSize: targetSize, contentMode: contentMode, options: options, resultHandler: resultHandler)
-    }
-    
-    @discardableResult
-    func requestImageForAssetLocalIdentifier(_ localIdentifier: String, targetSize: CGSize, contentMode: PHImageContentMode, options: PHImageRequestOptions?, resultHandler: @escaping (UIImage?, [AnyHashable : Any]?) -> Swift.Void) -> PHImageRequestID {
-        let assets = PHAsset.fetchAssets(withLocalIdentifiers: [localIdentifier], options: nil)
-        if assets.count == 0 { return PHInvalidImageRequestID }
-        guard let asset = assets.firstObject else { return PHInvalidImageRequestID }
-        return requestImageForAsset(asset: asset, targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: resultHandler)
-    }
-}
+// MARK: - Photo
 
-// MARK: - 保存/删除照片
 extension SwiftyPhotos {
     
-    func saveImage(image: UIImage, albumName: String, withLocation: Bool) -> Bool {
-        var isSaveSuccess = false
-        
-        let semaphore = DispatchSemaphore(value: 0)
-        
-        // 获取指定相册
-        guard let assetCollection = assetCollectionByName(albumName) else {
+    public func saveImage(_ image: UIImage, into albumName: String, withLocation: Bool, resultHandler: @escaping ResultHandlerOfPhotoOperation) -> Bool {
+        guard let photoAlbum = self.photoAlbumWithName(albumName) else {
             return false
         }
+        
+        var isImageSaved = false
+        
+        let semaphore = DispatchSemaphore(value: 0)
         
         PHPhotoLibrary.shared().performChanges({
             
@@ -310,17 +164,16 @@ extension SwiftyPhotos {
             let assetPlaceholder = assetChangeRequest.placeholderForCreatedAsset
             
             // 请求改变相册
-            let assetCollectionChangeRequest = PHAssetCollectionChangeRequest(for: assetCollection)
+            let assetCollectionChangeRequest = PHAssetCollectionChangeRequest(for: photoAlbum.assetCollection)
             let fastEnumerate: NSArray = [assetPlaceholder!]
             assetCollectionChangeRequest?.addAssets(fastEnumerate)
             
-        }) { (success, error) in
-            if success == true {
-                isSaveSuccess = true
+        }) { (isSuccess, error) in
+            if isSuccess == true {
                 print("success to save image to album : \(albumName)")
+                isImageSaved = true
             } else {
-                isSaveSuccess = false
-                print("failed to save image to album : \(albumName). \(String(describing: error))")
+                print("fail to save image to album : \(albumName). \(String(describing: error))")
             }
             
             semaphore.signal()
@@ -328,14 +181,31 @@ extension SwiftyPhotos {
         
         _ = semaphore.wait(timeout: .distantFuture)
         
-        return isSaveSuccess
+        return isImageSaved
     }
     
-    func deleteAsset(_ asset: PHAsset) {
+    public func deleteAsset(_ photoAsset: PhotoAssetModel, resultHandler: @escaping ResultHandlerOfPhotoOperation) -> Bool {
+        var isAssetDeleted = false
+        
+        let semaphore = DispatchSemaphore(value: 0)
+        
         PHPhotoLibrary.shared().performChanges({
-            let fastEnumerate: NSArray = [asset]
+            let fastEnumerate: NSArray = [photoAsset.asset]
             PHAssetChangeRequest.deleteAssets(fastEnumerate)
-        }, completionHandler: nil)
+        }) { (isSuccess, error) in
+            if isSuccess == true {
+                print("success to delete asset : \(photoAsset.name)")
+                isAssetDeleted = true
+            } else {
+                print("fail to delete asset : \(photoAsset.name). \(String(describing: error))")
+            }
+            
+            semaphore.signal()
+        }
+        
+        _ = semaphore.wait(timeout: .distantFuture)
+        
+        return isAssetDeleted
     }
 }
 

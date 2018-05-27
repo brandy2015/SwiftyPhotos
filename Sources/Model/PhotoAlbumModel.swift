@@ -10,26 +10,37 @@ import UIKit
 import Photos
 
 public class PhotoAlbumModel {
-    var name: String {
-        return assetCollection.localizedTitle!
+    public var name: String {
+        return self.assetCollection.localizedTitle!
     }
     
-    var assetCollection: PHAssetCollection!
-    var fetchResult: PHFetchResult<PHAsset>!
+    public let assetCollection: PHAssetCollection
+    public let fetchResult: PHFetchResult<PHAsset>
     
-    var photosCount: Int {
-        return fetchResult.count
+    public let photoAssets: [PhotoAssetModel]
+    
+    public var lastPhotoAsset: PhotoAssetModel? {
+        return self.photoAssets.last
     }
     
-    var thumbnail: PHAsset {
-        return fetchResult.lastObject!
+    public init(_ assetCollection: PHAssetCollection) {
+        self.assetCollection = assetCollection
+        
+        let options = PHFetchOptions()
+        options.predicate = NSPredicate(format: "mediaType=1")
+        self.fetchResult = PHAsset.fetchAssets(in: self.assetCollection, options: options)
+        
+        var array = [PhotoAssetModel]()
+        self.fetchResult.enumerateObjects { (asset, idx, stop) in
+            let photoAssetModel = PhotoAssetModel.init(asset)
+            array.append(photoAssetModel)
+        }
+        self.photoAssets = array
     }
-    
-    var isCameraRoll: Bool!
 }
 
 extension PhotoAlbumModel: CustomStringConvertible {
     public var description: String {
-        return name
+        return self.name
     }
 }

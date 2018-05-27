@@ -8,15 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		A42698C21FD8B71400422754 /* PhotoDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42698C11FD8B71400422754 /* PhotoDetailViewController.swift */; };
+		A446E30B20B70F4D0044710F /* PhotoAssetsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A446E30A20B70F4D0044710F /* PhotoAssetsView.swift */; };
+		A446E30D20B712B70044710F /* PhotoAssetsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A446E30C20B712B70044710F /* PhotoAssetsViewController.swift */; };
 		A4B92D911FD7A95C00DA5A78 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B92D901FD7A95C00DA5A78 /* AppDelegate.swift */; };
-		A4B92D931FD7A95C00DA5A78 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B92D921FD7A95C00DA5A78 /* ViewController.swift */; };
 		A4B92D961FD7A95C00DA5A78 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A4B92D941FD7A95C00DA5A78 /* Main.storyboard */; };
 		A4B92D981FD7A95C00DA5A78 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A4B92D971FD7A95C00DA5A78 /* Assets.xcassets */; };
 		A4B92D9B1FD7A95C00DA5A78 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A4B92D991FD7A95C00DA5A78 /* LaunchScreen.storyboard */; };
 		A4B92DA61FD7A95C00DA5A78 /* SwiftyPhotosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B92DA51FD7A95C00DA5A78 /* SwiftyPhotosTests.swift */; };
 		A4B92DC11FD7A98800DA5A78 /* SwiftyPhotos.podspec in Resources */ = {isa = PBXBuildFile; fileRef = A4B92DB01FD7A98700DA5A78 /* SwiftyPhotos.podspec */; };
-		A4B92DC21FD7A98800DA5A78 /* PhotoAlbumsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B92DB31FD7A98800DA5A78 /* PhotoAlbumsViewController.swift */; };
-		A4B92DC31FD7A98800DA5A78 /* PhotoAssetsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B92DB41FD7A98800DA5A78 /* PhotoAssetsViewController.swift */; };
 		A4B92DC51FD7A98800DA5A78 /* PhotoAlbumModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B92DB71FD7A98800DA5A78 /* PhotoAlbumModel.swift */; };
 		A4B92DC61FD7A98800DA5A78 /* PhotoAssetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B92DB81FD7A98800DA5A78 /* PhotoAssetModel.swift */; };
 		A4B92DC71FD7A98800DA5A78 /* SwiftyPhotos.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B92DB91FD7A98800DA5A78 /* SwiftyPhotos.swift */; };
@@ -40,9 +39,10 @@
 
 /* Begin PBXFileReference section */
 		A42698C11FD8B71400422754 /* PhotoDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailViewController.swift; sourceTree = "<group>"; };
+		A446E30A20B70F4D0044710F /* PhotoAssetsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoAssetsView.swift; sourceTree = "<group>"; };
+		A446E30C20B712B70044710F /* PhotoAssetsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoAssetsViewController.swift; sourceTree = "<group>"; };
 		A4B92D8D1FD7A95C00DA5A78 /* SwiftyPhotos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftyPhotos.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4B92D901FD7A95C00DA5A78 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		A4B92D921FD7A95C00DA5A78 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		A4B92D951FD7A95C00DA5A78 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		A4B92D971FD7A95C00DA5A78 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A4B92D9A1FD7A95C00DA5A78 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -51,8 +51,6 @@
 		A4B92DA51FD7A95C00DA5A78 /* SwiftyPhotosTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyPhotosTests.swift; sourceTree = "<group>"; };
 		A4B92DA71FD7A95C00DA5A78 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A4B92DB01FD7A98700DA5A78 /* SwiftyPhotos.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = SwiftyPhotos.podspec; path = ../SwiftyPhotos.podspec; sourceTree = "<group>"; };
-		A4B92DB31FD7A98800DA5A78 /* PhotoAlbumsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoAlbumsViewController.swift; sourceTree = "<group>"; };
-		A4B92DB41FD7A98800DA5A78 /* PhotoAssetsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoAssetsViewController.swift; sourceTree = "<group>"; };
 		A4B92DB71FD7A98800DA5A78 /* PhotoAlbumModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoAlbumModel.swift; sourceTree = "<group>"; };
 		A4B92DB81FD7A98800DA5A78 /* PhotoAssetModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoAssetModel.swift; sourceTree = "<group>"; };
 		A4B92DB91FD7A98800DA5A78 /* SwiftyPhotos.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyPhotos.swift; sourceTree = "<group>"; };
@@ -108,7 +106,7 @@
 			isa = PBXGroup;
 			children = (
 				A4B92D901FD7A95C00DA5A78 /* AppDelegate.swift */,
-				A4B92D921FD7A95C00DA5A78 /* ViewController.swift */,
+				A446E30C20B712B70044710F /* PhotoAssetsViewController.swift */,
 				A42698C11FD8B71400422754 /* PhotoDetailViewController.swift */,
 				A4B92D941FD7A95C00DA5A78 /* Main.storyboard */,
 				A4B92D971FD7A95C00DA5A78 /* Assets.xcassets */,
@@ -133,19 +131,9 @@
 				A4B92DB91FD7A98800DA5A78 /* SwiftyPhotos.swift */,
 				A4B92DB61FD7A98800DA5A78 /* Model */,
 				A4B92DBA1FD7A98800DA5A78 /* View */,
-				A4B92DB21FD7A98800DA5A78 /* Controller */,
 			);
 			name = Sources;
 			path = ../Sources;
-			sourceTree = "<group>";
-		};
-		A4B92DB21FD7A98800DA5A78 /* Controller */ = {
-			isa = PBXGroup;
-			children = (
-				A4B92DB31FD7A98800DA5A78 /* PhotoAlbumsViewController.swift */,
-				A4B92DB41FD7A98800DA5A78 /* PhotoAssetsViewController.swift */,
-			);
-			path = Controller;
 			sourceTree = "<group>";
 		};
 		A4B92DB61FD7A98800DA5A78 /* Model */ = {
@@ -163,6 +151,7 @@
 				A4B92DBB1FD7A98800DA5A78 /* PhotoAlbumsCell.swift */,
 				A4B92DBC1FD7A98800DA5A78 /* PhotoAlbumsCell.xib */,
 				A4B92DBD1FD7A98800DA5A78 /* PhotoAlbumsView.swift */,
+				A446E30A20B70F4D0044710F /* PhotoAssetsView.swift */,
 				A4B92DBE1FD7A98800DA5A78 /* PhotoAssetsCell.swift */,
 			);
 			path = View;
@@ -213,7 +202,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0900;
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = com.icetime;
 				TargetAttributes = {
 					A4B92D8C1FD7A95C00DA5A78 = {
@@ -276,16 +265,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				A4B92DC71FD7A98800DA5A78 /* SwiftyPhotos.swift in Sources */,
-				A4B92D931FD7A95C00DA5A78 /* ViewController.swift in Sources */,
+				A446E30B20B70F4D0044710F /* PhotoAssetsView.swift in Sources */,
 				A4B92D911FD7A95C00DA5A78 /* AppDelegate.swift in Sources */,
-				A4B92DC31FD7A98800DA5A78 /* PhotoAssetsViewController.swift in Sources */,
 				A4B92DC51FD7A98800DA5A78 /* PhotoAlbumModel.swift in Sources */,
 				A42698C21FD8B71400422754 /* PhotoDetailViewController.swift in Sources */,
 				A4B92DC81FD7A98800DA5A78 /* PhotoAlbumsCell.swift in Sources */,
 				A4B92DCA1FD7A98800DA5A78 /* PhotoAlbumsView.swift in Sources */,
 				A4B92DCB1FD7A98800DA5A78 /* PhotoAssetsCell.swift in Sources */,
-				A4B92DC21FD7A98800DA5A78 /* PhotoAlbumsViewController.swift in Sources */,
 				A4B92DC61FD7A98800DA5A78 /* PhotoAssetModel.swift in Sources */,
+				A446E30D20B712B70044710F /* PhotoAssetsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -341,6 +329,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -348,6 +337,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -398,6 +388,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -405,6 +396,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -441,6 +433,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = NZPBGBZZ28;
 				INFOPLIST_FILE = SwiftyPhotos/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.icetime.SwiftyPhotos;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -456,6 +449,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = NZPBGBZZ28;
 				INFOPLIST_FILE = SwiftyPhotos/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.icetime.SwiftyPhotos;
 				PRODUCT_NAME = "$(TARGET_NAME)";
