@@ -124,6 +124,11 @@ class PhotoAssetsViewController: UIViewController {
         
         SwiftyPhotos.shared.reloadAll { (isPhotoAuthrized) in
             if isPhotoAuthrized {
+                if let _ = SwiftyPhotos.shared.photoAlbumWithName("SwiftyPhotos") {
+                } else {
+                    _ = SwiftyPhotos.shared.createAlbum("SwiftyPhotos")
+                }
+                
                 if let allPhotosAlbum = SwiftyPhotos.shared.allPhotoAlbums.first {
                     self.photoAlbum = allPhotosAlbum
                 }
