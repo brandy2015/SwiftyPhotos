@@ -26,6 +26,7 @@ public class PhotoAssetModel {
     }
     
     fileprivate var isLocallyAvailable = false
+    
     public var isInCloud: Bool {
         if self.isLocallyAvailable {
             return false
