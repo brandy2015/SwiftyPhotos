@@ -25,17 +25,17 @@ public class PhotoAssetModel {
         return CGSize(width: self.asset.pixelWidth, height: self.asset.pixelHeight)
     }
     
-    fileprivate var isLocallyAvailable = false
+    fileprivate var locallyAvailable = false
     
     public var isInCloud: Bool {
-        if self.isLocallyAvailable {
+        if self.locallyAvailable {
             return false
         }
         
         if let assetResource = PHAssetResource.assetResources(for: asset).first {
             if let locallyAvailable = assetResource.value(forKey: "locallyAvailable") as? Bool {
-                self.isLocallyAvailable = locallyAvailable
-                if self.isLocallyAvailable == false {
+                self.locallyAvailable = locallyAvailable
+                if self.locallyAvailable == false {
                     return true
                 }
             }
@@ -100,7 +100,7 @@ extension PhotoAssetModel {
         self.imageRequestIdInCloud = self._requestImage(targetSize: targetSize, contentMode: .aspectFit, options: options, resultHandler: { [weak self] (image, info) in
             if let image = image {
                 if image.size.width > 256 && image.size.height > 256 {
-                    self?.isLocallyAvailable = true
+                    self?.locallyAvailable = true
                     resultHandler(image, info)
                 }
             }
