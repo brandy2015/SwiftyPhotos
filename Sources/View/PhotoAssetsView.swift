@@ -26,9 +26,9 @@ class PhotoAssetsView: UIView {
     fileprivate var photoRatios = [CGFloat]()
     
     // cell count of one line
-    private let cellCountOfLine: Int
+    fileprivate let cellCountOfLine: Int
     // offset between cells
-    private let cellOffset: CGFloat
+    fileprivate let cellOffset: CGFloat
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
