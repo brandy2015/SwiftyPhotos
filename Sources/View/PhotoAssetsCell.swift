@@ -15,17 +15,39 @@ class PhotoAssetsCell: UICollectionViewCell {
     
     public var photoAsset: PhotoAssetModel! {
         didSet {
-            self.imageRequestID = self.photoAsset.requestThumbnail(resultHandler: { (image, info) in
+            self.imageRequestID = self.photoAsset.requestThumbnail(resultHandler: { [weak self] (image, info) in
                 DispatchQueue.main.async {
                     if let info = info {
                         if let requestID = info[PHImageResultRequestIDKey] as? NSNumber {
-                            if requestID.int32Value == self.imageRequestID {
-                                self.thumbnail.image = image
+                            if let sself = self {
+                                if requestID.int32Value == sself.imageRequestID {
+                                    sself.thumbnail.image = image
+                                }
                             }
                         }
                     }
                 }
             })
+        }
+    }
+    
+    /// whether to keep photo ratio
+    /// must be set before photoAsset
+    public var isKeepingPhotoRatio: Bool = false {
+        didSet {
+            DispatchQueue.main.async {
+                if self.isKeepingPhotoRatio {
+                    self.thumbnail.contentMode = .scaleAspectFit
+                    let height = self.frame.size.width * self.photoAsset.photoSize.height / self.photoAsset.photoSize.width
+                    self.thumbnail.frame = CGRect(x: 0,
+                                                  y: self.frame.size.height - height,
+                                                  width: self.frame.size.width,
+                                                  height: height)
+                } else {
+                    self.thumbnail.contentMode = .scaleAspectFill
+                    self.thumbnail.frame = self.bounds
+                }
+            }
         }
     }
     
