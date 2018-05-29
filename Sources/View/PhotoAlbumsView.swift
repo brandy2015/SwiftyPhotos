@@ -9,12 +9,12 @@
 import UIKit
 
 
-protocol PhotoAlbumsViewDelegate: class {
+public protocol PhotoAlbumsViewDelegate: class {
     func PhotoAlbumsViewDidSelectPhotoAlbum(_ photoAlbum: PhotoAlbumModel)
 }
 
 
-class PhotoAlbumsView: UIView {
+public class PhotoAlbumsView: UIView {
 
     public weak var delegate: PhotoAlbumsViewDelegate?
     
@@ -35,18 +35,18 @@ class PhotoAlbumsView: UIView {
         self.addSubview(self.tableView)
     }
     
-    required init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
 }
 
 extension PhotoAlbumsView: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return SwiftyPhotos.shared.allPhotoAlbums.count
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "PhotoAlbumsCell", for: indexPath) as! PhotoAlbumsCell
         
         cell.albumModel = SwiftyPhotos.shared.allPhotoAlbums[indexPath.row]
@@ -56,7 +56,7 @@ extension PhotoAlbumsView: UITableViewDataSource {
 }
 
 extension PhotoAlbumsView: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let delegate = self.delegate {
             let photoAlbum = SwiftyPhotos.shared.allPhotoAlbums[indexPath.row]
             delegate.PhotoAlbumsViewDidSelectPhotoAlbum(photoAlbum)

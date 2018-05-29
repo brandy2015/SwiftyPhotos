@@ -9,7 +9,7 @@
 import UIKit
 import Photos
 
-class PhotoAlbumsCell: UITableViewCell {
+public class PhotoAlbumsCell: UITableViewCell {
 
     @IBOutlet weak var iconView: UIImageView!
     @IBOutlet weak var lbTitle: UILabel!
@@ -38,7 +38,7 @@ class PhotoAlbumsCell: UITableViewCell {
         }
     }
     
-    override func awakeFromNib() {
+    public override func awakeFromNib() {
         super.awakeFromNib()
         
         self.backgroundColor = UIColor.white

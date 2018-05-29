@@ -9,7 +9,7 @@
 import UIKit
 import Photos
 
-class PhotoAssetsCell: UICollectionViewCell {
+public class PhotoAssetsCell: UICollectionViewCell {
     
     public var imageRequestID: PHImageRequestID?
     
@@ -65,7 +65,7 @@ class PhotoAssetsCell: UICollectionViewCell {
         self.addSubview(self.thumbnail)
     }
     
-    required init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }

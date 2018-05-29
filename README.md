@@ -99,7 +99,7 @@ let view = PhotoAssetsView(frame: frame, photoAlbum: self.photoAlbum, cellCountO
 ```
 
 ```
-protocol PhotoAlbumsViewDelegate: class {
+public protocol PhotoAlbumsViewDelegate: class {
     func PhotoAlbumsViewDidSelectPhotoAlbum(_ photoAlbum: PhotoAlbumModel)
 }
 ```

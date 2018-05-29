@@ -56,7 +56,7 @@ public class PhotoAssetModel {
 
 // MARK: - locallyAvailable
 
-extension PhotoAssetModel {
+public extension PhotoAssetModel {
     @discardableResult
     public func requestThumbnail(resultHandler: @escaping ResultHandlerOfRequestPhoto) -> PHImageRequestID {
         return self.requestAvailableSizeImageInCloud(resultHandler: resultHandler)
@@ -81,7 +81,7 @@ extension PhotoAssetModel {
 
 // MARK: - iCloud
 
-extension PhotoAssetModel {
+public extension PhotoAssetModel {
     @discardableResult
     public func requestAvailableSizeImageInCloud(resultHandler: @escaping ResultHandlerOfRequestPhoto) -> PHImageRequestID {
         // the max size of photo without downloading from icloud.

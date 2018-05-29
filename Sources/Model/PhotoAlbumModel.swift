@@ -9,19 +9,27 @@
 import UIKit
 import Photos
 
+
+public protocol PhotoAlbumDelegate: class {
+    func PhotoAlbumChangeWithDetails(_ changeDetails: PHFetchResultChangeDetails<PHAsset>)
+}
+
+
 public class PhotoAlbumModel {
     public var name: String {
         return self.assetCollection.localizedTitle!
     }
     
     public let assetCollection: PHAssetCollection
-    public let fetchResult: PHFetchResult<PHAsset>
+    public var fetchResult: PHFetchResult<PHAsset>
     
-    public let photoAssets: [PhotoAssetModel]
+    public var photoAssets = [PhotoAssetModel]()
     
     public var lastPhotoAsset: PhotoAssetModel? {
         return self.photoAssets.last
     }
+    
+    public weak var delegate: PhotoAlbumDelegate?
     
     public init(_ assetCollection: PHAssetCollection) {
         self.assetCollection = assetCollection
@@ -30,6 +38,18 @@ public class PhotoAlbumModel {
         options.predicate = NSPredicate(format: "mediaType=1")
         self.fetchResult = PHAsset.fetchAssets(in: self.assetCollection, options: options)
         
+        self.reloadPhotoAssets()
+    }
+    
+    public func changeWithDetails(_ changeDetails: PHFetchResultChangeDetails<PHAsset>) {
+        self.fetchResult = changeDetails.fetchResultAfterChanges
+        
+        self.reloadPhotoAssets()
+        
+        self.delegate?.PhotoAlbumChangeWithDetails(changeDetails)
+    }
+    
+    public func reloadPhotoAssets() {
         var array = [PhotoAssetModel]()
         self.fetchResult.enumerateObjects( { (asset, idx, stop) in
             let photoAssetModel = PhotoAssetModel.init(asset)

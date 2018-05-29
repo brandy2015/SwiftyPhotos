@@ -7,14 +7,15 @@
 //
 
 import UIKit
+import Photos
 
 
-protocol PhotoAssetsViewDelegate: class {
+public protocol PhotoAssetsViewDelegate: class {
     func PhotoAssetsViewDidSelectPhoto(_ photoAsset: PhotoAssetModel)
 }
 
 
-class PhotoAssetsView: UIView {
+public class PhotoAssetsView: UIView {
     
     public weak var delegate: PhotoAssetsViewDelegate?
     
@@ -58,6 +59,8 @@ class PhotoAssetsView: UIView {
         self.cellOffset = cellOffset
         
         super.init(frame: frame)
+        
+        self.photoAlbum.delegate = self
         
         if self.isKeepingPhotoRatio {
             self.setupPhotoRatios()
@@ -111,7 +114,7 @@ class PhotoAssetsView: UIView {
         return maxValue
     }
     
-    required init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }
@@ -119,11 +122,11 @@ class PhotoAssetsView: UIView {
 // MARK: - UICollectionViewDataSource
 
 extension PhotoAssetsView: UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return self.photoAlbum.photoAssets.count
     }
 
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoAssetsCell", for: indexPath) as! PhotoAssetsCell
         
         cell.isKeepingPhotoRatio = self.isKeepingPhotoRatio
@@ -137,7 +140,7 @@ extension PhotoAssetsView: UICollectionViewDataSource {
 // MARK: - UICollectionViewDelegate
 
 extension PhotoAssetsView: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if let delegate = self.delegate {
             let photoAsset = self.photoAlbum.photoAssets[indexPath.item]
             delegate.PhotoAssetsViewDidSelectPhoto(photoAsset)
@@ -148,7 +151,7 @@ extension PhotoAssetsView: UICollectionViewDelegate {
 // MARK: - UICollectionViewDelegateFlowLayout
 
 extension PhotoAssetsView: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         // in case items can not be displayed in one line
         let itemWidth = (collectionView.frame.width - self.cellOffset * CGFloat(self.cellCountOfLine - 1) - 1.0) / CGFloat(self.cellCountOfLine)
         
@@ -161,5 +164,18 @@ extension PhotoAssetsView: UICollectionViewDelegateFlowLayout {
         }
         
         return CGSize(width: itemWidth, height: CGFloat(itemHeight))
+    }
+}
+
+// MARK: - PhotoAlbumDelegate
+
+extension PhotoAssetsView: PhotoAlbumDelegate {
+    public func PhotoAlbumChangeWithDetails(_ changeDetails: PHFetchResultChangeDetails<PHAsset>) {
+        if self.isKeepingPhotoRatio {
+            self.setupPhotoRatios()
+        }
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
+        }
     }
 }

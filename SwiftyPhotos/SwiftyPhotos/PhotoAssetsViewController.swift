@@ -82,7 +82,7 @@ class PhotoAssetsViewController: UIViewController {
                            y: 0,
                            width: self.view.frame.width,
                            height: self.view.frame.height - height)
-        let view = PhotoAssetsView(frame: frame, photoAlbum: self.photoAlbum, isKeepingPhotoRatio: true, cellCountOfLine: 3, cellOffset: 2.0)
+        let view = PhotoAssetsView(frame: frame, photoAlbum: self.photoAlbum, isKeepingPhotoRatio: false, cellCountOfLine: 3, cellOffset: 2.0)
         return view
     }()
     

@@ -18,7 +18,7 @@ fileprivate let AlbumsOfIOS = ["All Photos", "Camera Roll", "Selfies", "Screensh
 fileprivate let AlbumsOfAllPhotos = ["All Photos", "Camera Roll"]
 
 
-public class SwiftyPhotos {
+public class SwiftyPhotos: NSObject {
     public var isPhotoAuthorized = false
     
     public var allPhotoAlbums = [PhotoAlbumModel]()
@@ -33,11 +33,16 @@ public class SwiftyPhotos {
     
     private static let sharedInstance = SwiftyPhotos()
     public class var shared: SwiftyPhotos {
+        PHPhotoLibrary.shared().register(sharedInstance)
         return sharedInstance
+    }
+    
+    deinit {
+        PHPhotoLibrary.shared().unregisterChangeObserver(self)
     }
 }
 
-extension SwiftyPhotos {
+public extension SwiftyPhotos {
     public func reloadAll(resultHandler: @escaping ResultHandlerOfPhotoAuthrization) {
         self.requestAuthorization { (isPhotoAuthorized) in
             if isPhotoAuthorized {
@@ -100,7 +105,7 @@ extension SwiftyPhotos {
 
 // MARK: - Album
 
-extension SwiftyPhotos {
+public extension SwiftyPhotos {
     public func photoAlbumWithName(_ albumName: String) -> PhotoAlbumModel? {
         for (_, photoAlbum) in self.allPhotoAlbums.enumerated() {
             if photoAlbum.name == albumName {
@@ -124,10 +129,10 @@ extension SwiftyPhotos {
             PHAssetCollectionChangeRequest.creationRequestForAssetCollection(withTitle: albumName)
         }) { (isSuccess, error) in
             if isSuccess == true {
-                print("success to create album : \(albumName)")
+                print("SwiftyPhotos : success to create album : \(albumName)")
                 isAlbumCreated = true
             } else {
-                print("fail to create album : \(albumName). \(String(describing: error))")
+                print("SwiftyPhotos : fail to create album : \(albumName). \(String(describing: error))")
             }
             
             semaphore.signal()
@@ -141,8 +146,7 @@ extension SwiftyPhotos {
 
 // MARK: - Photo
 
-extension SwiftyPhotos {
-    
+public extension SwiftyPhotos {
     public func saveImage(_ image: UIImage, into albumName: String, withLocation: Bool, resultHandler: @escaping ResultHandlerOfPhotoOperation) -> Bool {
         guard let photoAlbum = self.photoAlbumWithName(albumName) else {
             return false
@@ -209,14 +213,13 @@ extension SwiftyPhotos {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
+extension SwiftyPhotos: PHPhotoLibraryChangeObserver {
+    public func photoLibraryDidChange(_ changeInstance: PHChange) {
+        for (_, photoAlbum) in self.allPhotoAlbums.enumerated() {
+            if let changeDetails = changeInstance.changeDetails(for: photoAlbum.fetchResult) {
+                photoAlbum.changeWithDetails(changeDetails)
+            }
+        }
+    }
+}
 
