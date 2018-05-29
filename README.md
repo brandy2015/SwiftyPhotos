@@ -95,7 +95,7 @@ if let _ = SwiftyPhotos.shared.photoAlbumWithName("SwiftyPhotos") {
 Create a PhotoAssetsView, and use PhotoAlbumsViewDelegate to handle the photo selection action.
 
 ```
-let view = PhotoAssetsView(frame: frame, photoAlbum: self.photoAlbum, cellCountOfLine: 4, cellOffset: 2.0)
+let view = PhotoAssetsView(frame: frame, photoAlbum: self.photoAlbum, isKeepingPhotoRatio: false, cellCountOfLine: 3, cellOffset: 2.0)
 ```
 
 ```
