@@ -31,7 +31,7 @@ public class PhotoAssetsView: UIView {
     // offset between cells
     fileprivate let cellOffset: CGFloat
     
-    private lazy var collectionView: UICollectionView = {
+    fileprivate lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.minimumInteritemSpacing = self.cellOffset
@@ -85,7 +85,7 @@ public class PhotoAssetsView: UIView {
             for j in 0 ..< self.cellCountOfLine {
                 arr.append(self.photoRatios[self.cellCountOfLine * i + j])
             }
-            let finalRatio = self.maxValueForAll(arr: arr)
+            let finalRatio = self._maxValueForAll(arr: arr)
             for k in 0 ..< self.cellCountOfLine {
                 self.photoRatios[self.cellCountOfLine * i + k] = finalRatio
             }
@@ -97,14 +97,14 @@ public class PhotoAssetsView: UIView {
             for i in 0 ..< others {
                 arr.append(self.photoRatios[self.cellCountOfLine * lineCount + i])
             }
-            let finalRatio = self.maxValueForAll(arr: arr)
+            let finalRatio = self._maxValueForAll(arr: arr)
             for j in 0 ..< others {
                 self.photoRatios[self.cellCountOfLine * lineCount + j] = finalRatio
             }
         }
     }
     
-    private func maxValueForAll(arr: [CGFloat]) -> CGFloat {
+    private func _maxValueForAll(arr: [CGFloat]) -> CGFloat {
         var maxValue: CGFloat = 0.0
         for (_, v) in arr.enumerated() {
             if v > maxValue {
