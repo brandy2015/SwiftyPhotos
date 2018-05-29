@@ -52,7 +52,7 @@ public extension SwiftyPhotos {
         }
     }
     
-    private func requestAuthorization(resultHandler: @escaping ResultHandlerOfPhotoAuthrization) {
+    public func requestAuthorization(resultHandler: @escaping ResultHandlerOfPhotoAuthrization) {
         switch PHPhotoLibrary.authorizationStatus() {
         case .notDetermined:
             PHPhotoLibrary.requestAuthorization { (authorizationStatus) in

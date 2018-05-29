@@ -49,7 +49,7 @@ public class PhotoAlbumModel {
         self.delegate?.PhotoAlbumChangeWithDetails(changeDetails)
     }
     
-    public func reloadPhotoAssets() {
+    fileprivate func reloadPhotoAssets() {
         var array = [PhotoAssetModel]()
         self.fetchResult.enumerateObjects( { (asset, idx, stop) in
             let photoAssetModel = PhotoAssetModel.init(asset)
