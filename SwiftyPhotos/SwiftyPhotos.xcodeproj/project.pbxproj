@@ -25,6 +25,7 @@
 		A4B92DCB1FD7A98800DA5A78 /* PhotoAssetsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B92DBE1FD7A98800DA5A78 /* PhotoAssetsCell.swift */; };
 		A4B92DCC1FD7A98800DA5A78 /* LICENSE.md in Resources */ = {isa = PBXBuildFile; fileRef = A4B92DBF1FD7A98800DA5A78 /* LICENSE.md */; };
 		A4B92DCD1FD7A98800DA5A78 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = A4B92DC01FD7A98800DA5A78 /* README.md */; };
+		A4CEEFB520BFB83C00067290 /* ZoomImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4CEEFB420BFB83C00067290 /* ZoomImageView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,6 +61,7 @@
 		A4B92DBE1FD7A98800DA5A78 /* PhotoAssetsCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoAssetsCell.swift; sourceTree = "<group>"; };
 		A4B92DBF1FD7A98800DA5A78 /* LICENSE.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = LICENSE.md; path = ../LICENSE.md; sourceTree = "<group>"; };
 		A4B92DC01FD7A98800DA5A78 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		A4CEEFB420BFB83C00067290 /* ZoomImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomImageView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -153,6 +155,7 @@
 				A4B92DBD1FD7A98800DA5A78 /* PhotoAlbumsView.swift */,
 				A446E30A20B70F4D0044710F /* PhotoAssetsView.swift */,
 				A4B92DBE1FD7A98800DA5A78 /* PhotoAssetsCell.swift */,
+				A4CEEFB420BFB83C00067290 /* ZoomImageView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -271,6 +274,7 @@
 				A42698C21FD8B71400422754 /* PhotoDetailViewController.swift in Sources */,
 				A4B92DC81FD7A98800DA5A78 /* PhotoAlbumsCell.swift in Sources */,
 				A4B92DCA1FD7A98800DA5A78 /* PhotoAlbumsView.swift in Sources */,
+				A4CEEFB520BFB83C00067290 /* ZoomImageView.swift in Sources */,
 				A4B92DCB1FD7A98800DA5A78 /* PhotoAssetsCell.swift in Sources */,
 				A4B92DC61FD7A98800DA5A78 /* PhotoAssetModel.swift in Sources */,
 				A446E30D20B712B70044710F /* PhotoAssetsViewController.swift in Sources */,

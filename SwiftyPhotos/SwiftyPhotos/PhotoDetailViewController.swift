@@ -13,10 +13,9 @@ class PhotoDetailViewController: UIViewController {
 
     var photoAsset: PhotoAssetModel!
     
-    private lazy var imageView: UIImageView = {
-        let iv = UIImageView(frame: self.view.bounds)
-        iv.contentMode = .scaleAspectFit
-        return iv
+    private lazy var zoomImageView: ZoomImageView = {
+        let v = ZoomImageView(frame: self.view.bounds)
+        return v
     }()
     
     private lazy var btnBack: UIButton = {
@@ -51,7 +50,7 @@ class PhotoDetailViewController: UIViewController {
         
         self.view.backgroundColor = UIColor.white
         
-        self.view.addSubview(self.imageView)
+        self.view.addSubview(self.zoomImageView)
         self.view.addSubview(self.btnBack)
         self.view.addSubview(self.btnDelete)
         
@@ -63,12 +62,12 @@ class PhotoDetailViewController: UIViewController {
             print("photo in icloud")
             self.photoAsset.requestAvailableSizeImageInCloud { [weak self] (image, info) in
                 if let image = image {
-                    self?.imageView.image = image
+                    self?.zoomImageView.image = image
                 }
             }
             self.photoAsset.requestMaxSizeImageInCloud(resultHandler: { [weak self] (image, info) in
                 if let image = image {
-                    self?.imageView.image = image
+                    self?.zoomImageView.image = image
                 }
             }) { [weak self] (progress, error, stop, info) in
                 self?.progressOfDownloadingInCloud = progress
@@ -77,7 +76,7 @@ class PhotoDetailViewController: UIViewController {
         } else {
             self.photoAsset.requestMaxSizeImage { [weak self] (image, info) in
                 if let image = image {
-                    self?.imageView.image = image
+                    self?.zoomImageView.image = image
                 }
             }
         }
@@ -90,8 +89,17 @@ class PhotoDetailViewController: UIViewController {
     
     @objc
     private func _actionBtnDelete(_ sender: UIButton) {
+//        if let image = self.zoomImageView.image {
+//            _ = SwiftyPhotos.shared.saveImage(image, intoAlbum: "SwiftyPhotos", withLocation: nil) { (isImageSaved, nil) in
+//                print("image saved: \(isImageSaved)")
+//            }
+//        }
+        
         _ = SwiftyPhotos.shared.deleteAsset(self.photoAsset) { (isAssetDeleted, error) in
             print("asset deleted: \(isAssetDeleted)")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+                self.dismiss(animated: true, completion: nil)
+            })
         }
     }
 }

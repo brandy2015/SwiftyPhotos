@@ -26,12 +26,14 @@ public class PhotoAlbumsCell: UITableViewCell {
         
             self.imageRequestID = self.albumModel.lastPhotoAsset?.requestThumbnail(resultHandler: { (image, info) in
                 DispatchQueue.main.async {
-                    if let info = info {
+                    if let image = image, let info = info {
                         if let requestID = info[PHImageResultRequestIDKey] as? NSNumber {
                             if requestID.int32Value == self.imageRequestID {
                                 self.iconView.image = image
                             }
                         }
+                    } else {
+                        self.iconView.image = nil
                     }
                 }
             })

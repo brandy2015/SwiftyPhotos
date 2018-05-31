@@ -78,12 +78,10 @@ public extension SwiftyPhotos {
             options.predicate = NSPredicate(format: "mediaType=1")
             
             let photoAlbum = PhotoAlbumModel.init(assetCollection)
-            if photoAlbum.photoAssets.count > 0 {
-                if AlbumsOfAllPhotos.contains(photoAlbum.name) {
-                    self.allPhotoAlbums.insert(photoAlbum, at: 0)
-                } else {
-                    self.allPhotoAlbums.append(photoAlbum)
-                }
+            if AlbumsOfAllPhotos.contains(photoAlbum.name) {
+                self.allPhotoAlbums.insert(photoAlbum, at: 0)
+            } else {
+                self.allPhotoAlbums.append(photoAlbum)
             }
         }
         
@@ -115,6 +113,7 @@ public extension SwiftyPhotos {
         return nil
     }
     
+    @discardableResult
     public func createAlbum(_ albumName: String) -> Bool {
         if let _ = self.photoAlbumWithName(albumName) {
             print("already existing album")
@@ -140,6 +139,9 @@ public extension SwiftyPhotos {
         
         _ = semaphore.wait(timeout: .distantFuture)
         
+        
+        self.allPhotoAlbums.removeAll()
+        self._reloadAll()
         return isAlbumCreated
     }
 }
@@ -147,7 +149,9 @@ public extension SwiftyPhotos {
 // MARK: - Photo
 
 public extension SwiftyPhotos {
-    public func saveImage(_ image: UIImage, into albumName: String, withLocation: Bool, resultHandler: @escaping ResultHandlerOfPhotoOperation) -> Bool {
+    public func saveImage(_ image: UIImage, intoAlbum albumName: String, withLocation location: CLLocation?, resultHandler: @escaping ResultHandlerOfPhotoOperation) -> Bool {
+        self.createAlbum(albumName)
+        
         guard let photoAlbum = self.photoAlbumWithName(albumName) else {
             return false
         }
@@ -158,16 +162,16 @@ public extension SwiftyPhotos {
         
         PHPhotoLibrary.shared().performChanges({
             
-            // 请求创建一个asset
+            // create an asset change request
             let assetChangeRequest = PHAssetChangeRequest.creationRequestForAsset(from: image)
-            if withLocation == true {
-//                assetChangeRequest.location = LocationManager.shared.currentCsLocation?.location
+            if let location = location {
+                assetChangeRequest.location = location
             }
             
-            //为Asset创建一个占位符，放到相册编辑请求中
+            // create a placeholder for asset, and add into assetCollectionChangeRequest
             let assetPlaceholder = assetChangeRequest.placeholderForCreatedAsset
             
-            // 请求改变相册
+            // create an assetCollection change request
             let assetCollectionChangeRequest = PHAssetCollectionChangeRequest(for: photoAlbum.assetCollection)
             let fastEnumerate: NSArray = [assetPlaceholder!]
             assetCollectionChangeRequest?.addAssets(fastEnumerate)
@@ -184,6 +188,8 @@ public extension SwiftyPhotos {
         }
         
         _ = semaphore.wait(timeout: .distantFuture)
+        
+        resultHandler(isImageSaved, nil)
         
         return isImageSaved
     }
@@ -208,6 +214,8 @@ public extension SwiftyPhotos {
         }
         
         _ = semaphore.wait(timeout: .distantFuture)
+        
+        resultHandler(isAssetDeleted, nil)
         
         return isAssetDeleted
     }

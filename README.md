@@ -155,6 +155,33 @@ if self.photoAsset.isInCloud {
 }
 ```
 
+Save or delete image
+
+```
+_ = SwiftyPhotos.shared.saveImage(image, intoAlbum: "SwiftyPhotos", withLocation: nil) { (isImageSaved, nil) in
+    print("image saved: \(isImageSaved)")
+}
+
+
+_ = SwiftyPhotos.shared.deleteAsset(self.photoAsset) { (isAssetDeleted, error) in
+    print("asset deleted: \(isAssetDeleted)")
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+        self.dismiss(animated: true, completion: nil)
+    })
+}            
+```
+
+### ZoomImageView
+
+```
+let v = ZoomImageView(frame: self.view.bounds)
+self.photoAsset.requestMaxSizeImage { [weak self] (image, info) in
+    if let image = image {
+        self?.zoomImageView.image = image
+    }
+}
+```
+
 ## Contact
 
 If you find an issue, just open a ticket. Pull requests are warmly welcome as well.
