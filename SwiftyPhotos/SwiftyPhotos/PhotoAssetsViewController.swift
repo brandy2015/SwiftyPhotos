@@ -224,8 +224,9 @@ extension PhotoAssetsViewController: PhotoAlbumsViewDelegate {
 // MARK: - PhotoAssetsViewDelegate
 
 extension PhotoAssetsViewController: PhotoAssetsViewDelegate {
-    func PhotoAssetsViewDidSelectPhoto(_ photoAsset: PhotoAssetModel) {
+    func PhotoAssetsViewDidSelectPhotoInAlbum(_ photoAlbum: PhotoAlbumModel, at indexPath: IndexPath) {
         let photoDetailVC = PhotoDetailViewController()
+        let photoAsset = photoAlbum.photoAssets[indexPath.item]
         photoDetailVC.photoAsset = photoAsset
         self.present(photoDetailVC, animated: true, completion: nil)
     }

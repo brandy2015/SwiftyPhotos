@@ -11,7 +11,7 @@ import Photos
 
 
 public protocol PhotoAssetsViewDelegate: class {
-    func PhotoAssetsViewDidSelectPhoto(_ photoAsset: PhotoAssetModel)
+    func PhotoAssetsViewDidSelectPhotoInAlbum(_ photoAlbum: PhotoAlbumModel, at indexPath: IndexPath)
 }
 
 
@@ -67,11 +67,22 @@ public class PhotoAssetsView: UIView {
         }
         
         self.addSubview(self.collectionView)
+        
+        self.scrollsToBottom()
     }
     
     public func reload(_ photoAlbum: PhotoAlbumModel) {
         self.photoAlbum = photoAlbum
         self.collectionView.reloadData()
+        
+        self.scrollsToBottom()
+    }
+    
+    private func scrollsToBottom() {
+        let count = self.photoAlbum.photoAssets.count
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
+            self.collectionView.scrollToItem(at: IndexPath(item: count - 1, section: 0), at: .centeredVertically, animated: false)
+        })
     }
     
     fileprivate func setupPhotoRatios() {
@@ -141,10 +152,7 @@ extension PhotoAssetsView: UICollectionViewDataSource {
 
 extension PhotoAssetsView: UICollectionViewDelegate {
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if let delegate = self.delegate {
-            let photoAsset = self.photoAlbum.photoAssets[indexPath.item]
-            delegate.PhotoAssetsViewDidSelectPhoto(photoAsset)
-        }
+        self.delegate?.PhotoAssetsViewDidSelectPhotoInAlbum(self.photoAlbum, at: indexPath)
     }
 }
 
