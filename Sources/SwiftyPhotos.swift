@@ -72,7 +72,7 @@ public extension SwiftyPhotos {
         }
     }
     
-    private func _reloadAll() {
+    fileprivate func _reloadAll() {
         let handleAssetCollection = { (assetCollection: PHAssetCollection) in
             let options = PHFetchOptions()
             options.predicate = NSPredicate(format: "mediaType=1")
