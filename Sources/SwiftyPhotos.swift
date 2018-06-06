@@ -104,10 +104,6 @@ public extension SwiftyPhotos {
         albums.enumerateObjects(_:) { (assetCollection, idx, stop) in
             handleAssetCollection(assetCollection)
         }
-        
-        for photoAlbum in self.allAlbums {
-            print(photoAlbum.name)
-        }
     }
 }
 

@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "SwiftyPhotos"
-  s.version      = "0.4.0"
+  s.version      = "0.5.0"
   s.summary      = "***Useful tool for PhotoKit framework*** to boost your productivity."
 
   s.description  = <<-DESC
