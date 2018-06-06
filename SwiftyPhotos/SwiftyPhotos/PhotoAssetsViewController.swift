@@ -129,7 +129,7 @@ class PhotoAssetsViewController: UIViewController {
                     _ = SwiftyPhotos.shared.createAlbum("SwiftyPhotos")
                 }
                 
-                if let allPhotosAlbum = SwiftyPhotos.shared.allPhotoAlbums.first {
+                if let allPhotosAlbum = SwiftyPhotos.shared.allAlbums.first {
                     self.photoAlbum = allPhotosAlbum
                 }
                 

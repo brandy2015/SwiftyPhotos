@@ -43,13 +43,13 @@ public class PhotoAlbumsView: UIView {
 
 extension PhotoAlbumsView: UITableViewDataSource {
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return SwiftyPhotos.shared.allPhotoAlbums.count
+        return SwiftyPhotos.shared.allAlbums.count
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "PhotoAlbumsCell", for: indexPath) as! PhotoAlbumsCell
         
-        cell.albumModel = SwiftyPhotos.shared.allPhotoAlbums[indexPath.row]
+        cell.albumModel = SwiftyPhotos.shared.allAlbums[indexPath.row]
         
         return cell
     }
@@ -58,7 +58,7 @@ extension PhotoAlbumsView: UITableViewDataSource {
 extension PhotoAlbumsView: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let delegate = self.delegate {
-            let photoAlbum = SwiftyPhotos.shared.allPhotoAlbums[indexPath.row]
+            let photoAlbum = SwiftyPhotos.shared.allAlbums[indexPath.row]
             delegate.PhotoAlbumsViewDidSelectPhotoAlbum(photoAlbum)
         }
     }

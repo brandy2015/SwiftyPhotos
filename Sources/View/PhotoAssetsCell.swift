@@ -51,7 +51,7 @@ public class PhotoAssetsCell: UICollectionViewCell {
         }
     }
     
-    private lazy var thumbnail: UIImageView = {
+    public lazy var thumbnail: UIImageView = {
         let iv = UIImageView(frame: self.bounds)
         iv.contentMode = .scaleAspectFill
         return iv

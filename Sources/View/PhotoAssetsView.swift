@@ -31,7 +31,7 @@ public class PhotoAssetsView: UIView {
     // offset between cells
     fileprivate let cellOffset: CGFloat
     
-    fileprivate lazy var collectionView: UICollectionView = {
+    public lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.minimumInteritemSpacing = self.cellOffset
@@ -80,9 +80,11 @@ public class PhotoAssetsView: UIView {
     
     private func scrollsToBottom() {
         let count = self.photoAlbum.photoAssets.count
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
-            self.collectionView.scrollToItem(at: IndexPath(item: count - 1, section: 0), at: .centeredVertically, animated: false)
-        })
+        if count > 1 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
+                self.collectionView.scrollToItem(at: IndexPath(item: count - 1, section: 0), at: .centeredVertically, animated: false)
+            })
+        }
     }
     
     fileprivate func setupPhotoRatios() {

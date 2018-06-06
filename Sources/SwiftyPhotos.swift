@@ -14,19 +14,23 @@ public typealias ResultHandlerOfPhotoOperation = (Bool, Error?) -> Void
 public typealias ResultHandlerOfPhotoAuthrization = (Bool) -> Void
 
 
-fileprivate let AlbumsOfIOS = ["All Photos", "Camera Roll", "Selfies", "Screenshots", "Favorites", "Panoramas", "Recently Added"]
-fileprivate let AlbumsOfAllPhotos = ["All Photos", "Camera Roll"]
+fileprivate let AlbumsOfIOS = ["Selfies", "Screenshots", "Favorites", "Panoramas", "Recently Added"]
 
 
 public class SwiftyPhotos: NSObject {
     public var isPhotoAuthorized = false
     
-    public var allPhotoAlbums = [PhotoAlbumModel]()
-    public var allPhotoAssets: [PhotoAssetModel] {
-        for (_, photoAlbum) in self.allPhotoAlbums.enumerated() {
-            if AlbumsOfAllPhotos.contains(photoAlbum.name) {
-                return photoAlbum.photoAssets
-            }
+    /// all albums
+    public var allAlbums = [PhotoAlbumModel]()
+    
+    /// Album for All Photos
+    public var allPhotosAlbum: PhotoAlbumModel? {
+        return self.allAlbums.first
+    }
+    /// Photos for All Photos Album
+    public var allPhotosAssets: [PhotoAssetModel] {
+        if let allPhotosAlbum = self.allPhotosAlbum {
+            return allPhotosAlbum.photoAssets
         }
         return [PhotoAssetModel]()
     }
@@ -78,11 +82,13 @@ public extension SwiftyPhotos {
             options.predicate = NSPredicate(format: "mediaType=1")
             
             let photoAlbum = PhotoAlbumModel.init(assetCollection)
-            if AlbumsOfAllPhotos.contains(photoAlbum.name) {
-                self.allPhotoAlbums.insert(photoAlbum, at: 0)
-            } else {
-                self.allPhotoAlbums.append(photoAlbum)
-            }
+            self.allAlbums.append(photoAlbum)
+        }
+        
+        // All Photos
+        let allPhotosAlbum = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumUserLibrary, options: nil)
+        allPhotosAlbum.enumerateObjects(_:) { (assetCollection, idx, stop) in
+            handleAssetCollection(assetCollection)
         }
         
         let smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: nil)
@@ -98,6 +104,10 @@ public extension SwiftyPhotos {
         albums.enumerateObjects(_:) { (assetCollection, idx, stop) in
             handleAssetCollection(assetCollection)
         }
+        
+        for photoAlbum in self.allAlbums {
+            print(photoAlbum.name)
+        }
     }
 }
 
@@ -105,7 +115,7 @@ public extension SwiftyPhotos {
 
 public extension SwiftyPhotos {
     public func photoAlbumWithName(_ albumName: String) -> PhotoAlbumModel? {
-        for (_, photoAlbum) in self.allPhotoAlbums.enumerated() {
+        for (_, photoAlbum) in self.allAlbums.enumerated() {
             if photoAlbum.name == albumName {
                 return photoAlbum
             }
@@ -140,7 +150,7 @@ public extension SwiftyPhotos {
         _ = semaphore.wait(timeout: .distantFuture)
         
         
-        self.allPhotoAlbums.removeAll()
+        self.allAlbums.removeAll()
         self._reloadAll()
         return isAlbumCreated
     }
@@ -223,7 +233,7 @@ public extension SwiftyPhotos {
 
 extension SwiftyPhotos: PHPhotoLibraryChangeObserver {
     public func photoLibraryDidChange(_ changeInstance: PHChange) {
-        for (_, photoAlbum) in self.allPhotoAlbums.enumerated() {
+        for (_, photoAlbum) in self.allAlbums.enumerated() {
             if let changeDetails = changeInstance.changeDetails(for: photoAlbum.fetchResult) {
                 photoAlbum.changeWithDetails(changeDetails)
             }
