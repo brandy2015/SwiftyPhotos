@@ -88,6 +88,7 @@ public class PhotoAssetsView: UIView {
     }
     
     fileprivate func setupPhotoRatios() {
+        self.photoRatios.removeAll()
         for (_, photoAsset) in self.photoAlbum.photoAssets.enumerated() {
             self.photoRatios.append(photoAsset.photoSize.height / photoAsset.photoSize.width)
         }

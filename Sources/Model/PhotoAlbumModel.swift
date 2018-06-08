@@ -50,12 +50,11 @@ public class PhotoAlbumModel {
     }
     
     fileprivate func reloadPhotoAssets() {
-        var array = [PhotoAssetModel]()
+        self.photoAssets.removeAll()
         self.fetchResult.enumerateObjects( { (asset, idx, stop) in
             let photoAssetModel = PhotoAssetModel.init(asset)
-            array.append(photoAssetModel)
+            self.photoAssets.append(photoAssetModel)
         })
-        self.photoAssets = array
     }
 }
 
