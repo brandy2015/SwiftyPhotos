@@ -57,7 +57,7 @@ public class PhotoAssetsCell: UICollectionViewCell {
         return iv
     }()
     
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
         
         self.backgroundColor = UIColor.white

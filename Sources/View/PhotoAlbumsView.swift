@@ -21,7 +21,7 @@ public class PhotoAlbumsView: UIView {
     private lazy var tableView: UITableView = {
         let tableView: UITableView = UITableView(frame: self.bounds, style: .plain)
         
-        tableView.register(UINib(nibName: "PhotoAlbumsCell", bundle: nil), forCellReuseIdentifier: "PhotoAlbumsCell")
+        tableView.register(PhotoAlbumsCell.classForCoder(), forCellReuseIdentifier: "PhotoAlbumsCell")
         tableView.dataSource = self
         tableView.delegate = self
         tableView.rowHeight = 60.0
@@ -29,7 +29,7 @@ public class PhotoAlbumsView: UIView {
         return tableView
     }()
     
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
         
         self.addSubview(self.tableView)

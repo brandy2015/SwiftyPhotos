@@ -41,7 +41,7 @@ public class ZoomImageView: UIView {
         return g
     }()
     
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
         
         self.addSubview(self.scrollView)

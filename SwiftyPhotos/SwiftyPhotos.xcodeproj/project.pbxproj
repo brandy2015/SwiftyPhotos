@@ -20,7 +20,6 @@
 		A4B92DC61FD7A98800DA5A78 /* PhotoAssetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B92DB81FD7A98800DA5A78 /* PhotoAssetModel.swift */; };
 		A4B92DC71FD7A98800DA5A78 /* SwiftyPhotos.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B92DB91FD7A98800DA5A78 /* SwiftyPhotos.swift */; };
 		A4B92DC81FD7A98800DA5A78 /* PhotoAlbumsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B92DBB1FD7A98800DA5A78 /* PhotoAlbumsCell.swift */; };
-		A4B92DC91FD7A98800DA5A78 /* PhotoAlbumsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A4B92DBC1FD7A98800DA5A78 /* PhotoAlbumsCell.xib */; };
 		A4B92DCA1FD7A98800DA5A78 /* PhotoAlbumsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B92DBD1FD7A98800DA5A78 /* PhotoAlbumsView.swift */; };
 		A4B92DCB1FD7A98800DA5A78 /* PhotoAssetsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B92DBE1FD7A98800DA5A78 /* PhotoAssetsCell.swift */; };
 		A4B92DCC1FD7A98800DA5A78 /* LICENSE.md in Resources */ = {isa = PBXBuildFile; fileRef = A4B92DBF1FD7A98800DA5A78 /* LICENSE.md */; };
@@ -56,7 +55,6 @@
 		A4B92DB81FD7A98800DA5A78 /* PhotoAssetModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoAssetModel.swift; sourceTree = "<group>"; };
 		A4B92DB91FD7A98800DA5A78 /* SwiftyPhotos.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyPhotos.swift; sourceTree = "<group>"; };
 		A4B92DBB1FD7A98800DA5A78 /* PhotoAlbumsCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoAlbumsCell.swift; sourceTree = "<group>"; };
-		A4B92DBC1FD7A98800DA5A78 /* PhotoAlbumsCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PhotoAlbumsCell.xib; sourceTree = "<group>"; };
 		A4B92DBD1FD7A98800DA5A78 /* PhotoAlbumsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoAlbumsView.swift; sourceTree = "<group>"; };
 		A4B92DBE1FD7A98800DA5A78 /* PhotoAssetsCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoAssetsCell.swift; sourceTree = "<group>"; };
 		A4B92DBF1FD7A98800DA5A78 /* LICENSE.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = LICENSE.md; path = ../LICENSE.md; sourceTree = "<group>"; };
@@ -151,7 +149,6 @@
 			isa = PBXGroup;
 			children = (
 				A4B92DBB1FD7A98800DA5A78 /* PhotoAlbumsCell.swift */,
-				A4B92DBC1FD7A98800DA5A78 /* PhotoAlbumsCell.xib */,
 				A4B92DBD1FD7A98800DA5A78 /* PhotoAlbumsView.swift */,
 				A446E30A20B70F4D0044710F /* PhotoAssetsView.swift */,
 				A4B92DBE1FD7A98800DA5A78 /* PhotoAssetsCell.swift */,
@@ -245,7 +242,6 @@
 			files = (
 				A4B92D9B1FD7A95C00DA5A78 /* LaunchScreen.storyboard in Resources */,
 				A4B92D981FD7A95C00DA5A78 /* Assets.xcassets in Resources */,
-				A4B92DC91FD7A98800DA5A78 /* PhotoAlbumsCell.xib in Resources */,
 				A4B92DCD1FD7A98800DA5A78 /* README.md in Resources */,
 				A4B92D961FD7A95C00DA5A78 /* Main.storyboard in Resources */,
 				A4B92DCC1FD7A98800DA5A78 /* LICENSE.md in Resources */,
