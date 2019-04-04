@@ -3,8 +3,8 @@
 
 [![Cocoapods](https://img.shields.io/cocoapods/v/SwiftyPhotos.svg)](https://cocoapods.org/pods/SwiftyPhotos)
 [![Platform](https://img.shields.io/badge/Platform-iOS-lightgrey.svg)](https://github.com/icetime17/SwiftyPhotos)
-[![Swift](https://img.shields.io/badge/Swift-3.0-orange.svg)](https://swift.org)
-[![Xcode](https://img.shields.io/badge/Xcode-9.3-blue.svg)](https://developer.apple.com/xcode)
+[![Swift](https://img.shields.io/badge/Swift-5.0-orange.svg)](https://swift.org)
+[![Xcode](https://img.shields.io/badge/Xcode-10.0-blue.svg)](https://developer.apple.com/xcode)
 [![MIT](https://img.shields.io/badge/License-MIT-red.svg)](https://opensource.org/licenses/MIT)
 
 Useful tool for ***PhotoKit framework*** to boost your productivity.
@@ -12,7 +12,7 @@ Useful tool for ***PhotoKit framework*** to boost your productivity.
 
 ## Requirements:
 
-Xcode 8 (or later) with Swift 3. This library is made for iOS 10.0 or later.
+Xcode 10 (or later) with Swift 5. This library is made for iOS 10.0 or later.
 
 ## Installation
 

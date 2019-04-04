@@ -1,12 +1,12 @@
 Pod::Spec.new do |s|
 
   s.name         = "SwiftyPhotos"
-  s.version      = "0.7.0"
+  s.version      = "0.8.0"
   s.summary      = "***Useful tool for PhotoKit framework*** to boost your productivity."
 
   s.description  = <<-DESC
                     ***Useful tool for PhotoKit framework*** to boost your productivity.
-                    Swift 3.0.
+                    Swift 5.0.
                    DESC
 
   s.homepage     = "https://github.com/icetime17/SwiftyPhotos"
