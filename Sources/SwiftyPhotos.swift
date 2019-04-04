@@ -47,7 +47,7 @@ public class SwiftyPhotos: NSObject {
 }
 
 public extension SwiftyPhotos {
-    public func reloadAll(resultHandler: @escaping ResultHandlerOfPhotoAuthrization) {
+    func reloadAll(resultHandler: @escaping ResultHandlerOfPhotoAuthrization) {
         self.requestAuthorization { (isPhotoAuthorized) in
             if isPhotoAuthorized {
                 self._reloadAll()
@@ -56,8 +56,9 @@ public extension SwiftyPhotos {
         }
     }
     
-    public func requestAuthorization(resultHandler: @escaping ResultHandlerOfPhotoAuthrization) {
-        switch PHPhotoLibrary.authorizationStatus() {
+    func requestAuthorization(resultHandler: @escaping ResultHandlerOfPhotoAuthrization) {
+        let authorizationStatus = PHPhotoLibrary.authorizationStatus()
+        switch authorizationStatus {
         case .notDetermined:
             PHPhotoLibrary.requestAuthorization { (authorizationStatus) in
                 if authorizationStatus == .authorized {
@@ -73,6 +74,8 @@ public extension SwiftyPhotos {
             break
         case .authorized:
             resultHandler(true)
+        default:
+            print("nothing")
         }
     }
     
@@ -110,7 +113,7 @@ public extension SwiftyPhotos {
 // MARK: - Album
 
 public extension SwiftyPhotos {
-    public func photoAlbumWithName(_ albumName: String) -> PhotoAlbumModel? {
+    func photoAlbumWithName(_ albumName: String) -> PhotoAlbumModel? {
         for (_, photoAlbum) in self.allAlbums.enumerated() {
             if photoAlbum.name == albumName {
                 return photoAlbum
@@ -120,7 +123,7 @@ public extension SwiftyPhotos {
     }
     
     @discardableResult
-    public func createAlbum(_ albumName: String) -> Bool {
+    func createAlbum(_ albumName: String) -> Bool {
         if let _ = self.photoAlbumWithName(albumName) {
             print("already existing album")
             return false
@@ -155,7 +158,7 @@ public extension SwiftyPhotos {
 // MARK: - Photo
 
 public extension SwiftyPhotos {
-    public func saveImage(_ image: UIImage, intoAlbum albumName: String, withLocation location: CLLocation?, resultHandler: @escaping ResultHandlerOfPhotoOperation) -> Bool {
+    func saveImage(_ image: UIImage, intoAlbum albumName: String, withLocation location: CLLocation?, resultHandler: @escaping ResultHandlerOfPhotoOperation) -> Bool {
         self.createAlbum(albumName)
         
         guard let photoAlbum = self.photoAlbumWithName(albumName) else {
@@ -200,7 +203,7 @@ public extension SwiftyPhotos {
         return isImageSaved
     }
     
-    public func deleteAsset(_ photoAsset: PhotoAssetModel, resultHandler: @escaping ResultHandlerOfPhotoOperation) -> Bool {
+    func deleteAsset(_ photoAsset: PhotoAssetModel, resultHandler: @escaping ResultHandlerOfPhotoOperation) -> Bool {
         var isAssetDeleted = false
         
         let semaphore = DispatchSemaphore(value: 0)

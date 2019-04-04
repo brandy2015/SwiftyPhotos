@@ -58,12 +58,12 @@ public class PhotoAssetModel {
 
 public extension PhotoAssetModel {
     @discardableResult
-    public func requestThumbnail(resultHandler: @escaping ResultHandlerOfRequestPhoto) -> PHImageRequestID {
+    func requestThumbnail(resultHandler: @escaping ResultHandlerOfRequestPhoto) -> PHImageRequestID {
         return self.requestAvailableSizeImageInCloud(resultHandler: resultHandler)
     }
     
     @discardableResult
-    public func requestScreenSizeImage(resultHandler: @escaping ResultHandlerOfRequestPhoto) -> PHImageRequestID {
+    func requestScreenSizeImage(resultHandler: @escaping ResultHandlerOfRequestPhoto) -> PHImageRequestID {
         let targetSize = CGSize(width: UIScreen.main.bounds.width * 4, height: UIScreen.main.bounds.height * 4)
         let options = PHImageRequestOptions()
         options.deliveryMode = .highQualityFormat
@@ -71,7 +71,7 @@ public extension PhotoAssetModel {
     }
     
     @discardableResult
-    public func requestMaxSizeImage(resultHandler: @escaping ResultHandlerOfRequestPhoto) -> PHImageRequestID {
+    func requestMaxSizeImage(resultHandler: @escaping ResultHandlerOfRequestPhoto) -> PHImageRequestID {
         let targetSize = PHImageManagerMaximumSize
         let options = PHImageRequestOptions()
         options.deliveryMode = .highQualityFormat
@@ -83,7 +83,7 @@ public extension PhotoAssetModel {
 
 public extension PhotoAssetModel {
     @discardableResult
-    public func requestAvailableSizeImageInCloud(resultHandler: @escaping ResultHandlerOfRequestPhoto) -> PHImageRequestID {
+    func requestAvailableSizeImageInCloud(resultHandler: @escaping ResultHandlerOfRequestPhoto) -> PHImageRequestID {
         // the max size of photo without downloading from icloud.
         // the most suitable size of thumbnail
         let targetSize = CGSize(width:256, height:256)
@@ -91,7 +91,7 @@ public extension PhotoAssetModel {
     }
     
     @discardableResult
-    public func requestMaxSizeImageInCloud(resultHandler: @escaping ResultHandlerOfRequestPhoto, progressHandler: @escaping ProgressHandlerOfRequestPhotoInCloud) -> PHImageRequestID {
+    func requestMaxSizeImageInCloud(resultHandler: @escaping ResultHandlerOfRequestPhoto, progressHandler: @escaping ProgressHandlerOfRequestPhotoInCloud) -> PHImageRequestID {
         let targetSize = PHImageManagerMaximumSize
         let options = PHImageRequestOptions()
         options.isNetworkAccessAllowed = true
@@ -108,7 +108,7 @@ public extension PhotoAssetModel {
         return self.imageRequestIdInCloud
     }
     
-    public func cancelImageRequestInCloud() {
+    func cancelImageRequestInCloud() {
         if self.imageRequestIdInCloud != PHInvalidImageRequestID {
             PHImageManager.default().cancelImageRequest(self.imageRequestIdInCloud)
             self.imageRequestIdInCloud = PHInvalidImageRequestID
