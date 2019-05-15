@@ -12,7 +12,9 @@ import Photos
 class PhotoDetailViewController: UIViewController {
 
     var photoAsset: PhotoAssetModel!
+    private var progressOfDownloadingInCloud: Double = 0.0
     
+    // MARK: - subViews
     private lazy var zoomImageView: ZoomImageView = {
         let v = ZoomImageView(frame: self.view.bounds)
         return v
@@ -36,55 +38,37 @@ class PhotoDetailViewController: UIViewController {
         return btn
     }()
     
-    private var progressOfDownloadingInCloud: Double = 0.0
-    
     deinit {
         if self.photoAsset.isInCloud {
             print("cancel request photo in icloud")
             self.photoAsset.cancelImageRequestInCloud()
         }
     }
-    
+}
+
+// MARK: - LifeCycle
+
+extension PhotoDetailViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.backgroundColor = UIColor.white
+        view.backgroundColor = UIColor.white
         
-        self.view.addSubview(self.zoomImageView)
-        self.view.addSubview(self.btnBack)
-        self.view.addSubview(self.btnDelete)
+        view.addSubview(zoomImageView)
+        view.addSubview(btnBack)
+        view.addSubview(btnDelete)
         
-        self.setupPhoto()
+        setupPhoto()
     }
     
-    private func setupPhoto() {
-        if self.photoAsset.isInCloud {
-            print("photo in icloud")
-            self.photoAsset.requestAvailableSizeImageInCloud { [weak self] (image, info) in
-                if let image = image {
-                    self?.zoomImageView.image = image
-                }
-            }
-            self.photoAsset.requestMaxSizeImageInCloud(resultHandler: { [weak self] (image, info) in
-                if let image = image {
-                    self?.zoomImageView.image = image
-                }
-            }) { [weak self] (progress, error, stop, info) in
-                self?.progressOfDownloadingInCloud = progress
-                print("downloading progress of icloud photo: \(String(progress))")
-            }
-        } else {
-            self.photoAsset.requestMaxSizeImage { [weak self] (image, info) in
-                if let image = image {
-                    self?.zoomImageView.image = image
-                }
-            }
-        }
-    }
-    
+}
+
+// MARK: - Actions
+
+extension PhotoDetailViewController {
     @objc
     private func _actionBtnBack(_ sender: UIButton) {
-        self.dismiss(animated: true, completion: nil)
+        dismiss(animated: true, completion: nil)
     }
     
     @objc
@@ -100,6 +84,29 @@ class PhotoDetailViewController: UIViewController {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
                 self.dismiss(animated: true, completion: nil)
             })
+        }
+    }
+}
+
+// MARK: - Private
+
+extension PhotoDetailViewController {
+    private func setupPhoto() {
+        if photoAsset.isInCloud {
+            print("photo in icloud")
+            photoAsset.requestAvailableSizeImageInCloud { [weak self] (image, info) in
+                self?.zoomImageView.image = image
+            }
+            photoAsset.requestMaxSizeImageInCloud(resultHandler: { [weak self] (image, info) in
+                self?.zoomImageView.image = image
+            }) { [weak self] (progress, error, stop, info) in
+                print("downloading progress of icloud photo: \(progress)")
+                self?.progressOfDownloadingInCloud = progress
+            }
+        } else {
+            photoAsset.requestMaxSizeImage { [weak self] (image, info) in
+                self?.zoomImageView.image = image
+            }
         }
     }
 }

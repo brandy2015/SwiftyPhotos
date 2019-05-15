@@ -25,11 +25,11 @@ public class SwiftyPhotos: NSObject {
     
     /// Album for All Photos
     public var allPhotosAlbum: PhotoAlbumModel? {
-        return self.allAlbums.first
+        return allAlbums.first
     }
     /// Photos for All Photos Album
     public var allPhotosAssets: [PhotoAssetModel] {
-        if let allPhotosAlbum = self.allPhotosAlbum {
+        if let allPhotosAlbum = allPhotosAlbum {
             return allPhotosAlbum.photoAssets
         }
         return [PhotoAssetModel]()
@@ -46,16 +46,9 @@ public class SwiftyPhotos: NSObject {
     }
 }
 
+// MARK: - Authrization
+
 public extension SwiftyPhotos {
-    func reloadAll(resultHandler: @escaping ResultHandlerOfPhotoAuthrization) {
-        self.requestAuthorization { (isPhotoAuthorized) in
-            if isPhotoAuthorized {
-                self._reloadAll()
-            }
-            resultHandler(isPhotoAuthorized)
-        }
-    }
-    
     func requestAuthorization(resultHandler: @escaping ResultHandlerOfPhotoAuthrization) {
         let authorizationStatus = PHPhotoLibrary.authorizationStatus()
         switch authorizationStatus {
@@ -67,24 +60,36 @@ public extension SwiftyPhotos {
                     resultHandler(false)
                 }
             }
-            break
         case .restricted, .denied:
-            print("authorizationStatus denied")
+            print(">>>SwiftyPhotos : authorizationStatus denied")
             resultHandler(false)
-            break
         case .authorized:
+            print(">>>SwiftyPhotos : authorizationStatus already authorized")
             resultHandler(true)
         default:
-            print("nothing")
+            print(">>>SwiftyPhotos : authorizationStatus unknown")
+        }
+    }
+}
+
+// MARK: - reload
+
+public extension SwiftyPhotos {
+    func reloadAll(resultHandler: @escaping ResultHandlerOfPhotoAuthrization) {
+        requestAuthorization { (isPhotoAuthorized) in
+            if isPhotoAuthorized {
+                self.p_reloadAll()
+            }
+            resultHandler(isPhotoAuthorized)
         }
     }
     
-    fileprivate func _reloadAll() {
+    fileprivate func p_reloadAll() {
         let handleAssetCollection = { (assetCollection: PHAssetCollection) in
             let options = PHFetchOptions()
             options.predicate = NSPredicate(format: "mediaType=1")
             
-            let photoAlbum = PhotoAlbumModel.init(assetCollection)
+            let photoAlbum = PhotoAlbumModel(assetCollection)
             self.allAlbums.append(photoAlbum)
         }
         
@@ -96,10 +101,12 @@ public extension SwiftyPhotos {
         
         let smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: nil)
         smartAlbums.enumerateObjects(_:) { (assetCollection, idx, stop) in
-            if let albumName = assetCollection.localizedTitle {
-                if AlbumsOfIOS.contains(albumName) {
-                    handleAssetCollection(assetCollection)
-                }
+            guard let albumName = assetCollection.localizedTitle else {
+                print(">>>SwiftyPhotos : failed to fetch albumName of assetCollection")
+                return
+            }
+            if AlbumsOfIOS.contains(albumName) {
+                handleAssetCollection(assetCollection)
             }
         }
         
@@ -113,19 +120,23 @@ public extension SwiftyPhotos {
 // MARK: - Album
 
 public extension SwiftyPhotos {
-    func photoAlbumWithName(_ albumName: String) -> PhotoAlbumModel? {
-        for (_, photoAlbum) in self.allAlbums.enumerated() {
-            if photoAlbum.name == albumName {
-                return photoAlbum
-            }
+    func isAlbumExisting(albumName: String) -> Bool {
+        if let _ = photoAlbumWithName(albumName) {
+            return true
         }
-        return nil
+        return false
+    }
+    
+    func photoAlbumWithName(_ albumName: String) -> PhotoAlbumModel? {
+        return allAlbums.filter { (photoAlbum) -> Bool in
+            albumName == photoAlbum.name
+        }.first
     }
     
     @discardableResult
     func createAlbum(_ albumName: String) -> Bool {
-        if let _ = self.photoAlbumWithName(albumName) {
-            print("already existing album")
+        if let _ = photoAlbumWithName(albumName) {
+            print(">>>SwiftyPhotos : album \(albumName) is already existing")
             return false
         }
         
@@ -137,10 +148,10 @@ public extension SwiftyPhotos {
             PHAssetCollectionChangeRequest.creationRequestForAssetCollection(withTitle: albumName)
         }) { (isSuccess, error) in
             if isSuccess == true {
-                print("SwiftyPhotos : success to create album : \(albumName)")
+                print(">>>SwiftyPhotos : succeed to create album : \(albumName)")
                 isAlbumCreated = true
             } else {
-                print("SwiftyPhotos : fail to create album : \(albumName). \(String(describing: error))")
+                print(">>>SwiftyPhotos : failed to create album : \(albumName). \(String(describing: error))")
             }
             
             semaphore.signal()
@@ -149,8 +160,8 @@ public extension SwiftyPhotos {
         _ = semaphore.wait(timeout: .distantFuture)
         
         
-        self.allAlbums.removeAll()
-        self._reloadAll()
+        allAlbums.removeAll()
+        p_reloadAll()
         return isAlbumCreated
     }
 }
@@ -159,9 +170,9 @@ public extension SwiftyPhotos {
 
 public extension SwiftyPhotos {
     func saveImage(_ image: UIImage, intoAlbum albumName: String, withLocation location: CLLocation?, resultHandler: @escaping ResultHandlerOfPhotoOperation) -> Bool {
-        self.createAlbum(albumName)
+        createAlbum(albumName)
         
-        guard let photoAlbum = self.photoAlbumWithName(albumName) else {
+        guard let photoAlbum = photoAlbumWithName(albumName) else {
             return false
         }
         
@@ -187,10 +198,10 @@ public extension SwiftyPhotos {
             
         }) { (isSuccess, error) in
             if isSuccess == true {
-                print("success to save image to album : \(albumName)")
+                print(">>>SwiftyPhotos : succeed to save image to album : \(albumName)")
                 isImageSaved = true
             } else {
-                print("fail to save image to album : \(albumName). \(String(describing: error))")
+                print(">>>SwiftyPhotos : failed to save image to album : \(albumName). \(String(describing: error))")
             }
             
             semaphore.signal()
@@ -213,10 +224,10 @@ public extension SwiftyPhotos {
             PHAssetChangeRequest.deleteAssets(fastEnumerate)
         }) { (isSuccess, error) in
             if isSuccess == true {
-                print("success to delete asset : \(photoAsset.name)")
+                print(">>>SwiftyPhotos : succeed to delete asset : \(photoAsset.name)")
                 isAssetDeleted = true
             } else {
-                print("fail to delete asset : \(photoAsset.name). \(String(describing: error))")
+                print(">>>SwiftyPhotos : failed to delete asset : \(photoAsset.name). \(String(describing: error))")
             }
             
             semaphore.signal()
@@ -230,9 +241,10 @@ public extension SwiftyPhotos {
     }
 }
 
+// MARK: - PHPhotoLibraryChangeObserver
 extension SwiftyPhotos: PHPhotoLibraryChangeObserver {
     public func photoLibraryDidChange(_ changeInstance: PHChange) {
-        for (_, photoAlbum) in self.allAlbums.enumerated() {
+        for (_, photoAlbum) in allAlbums.enumerated() {
             if let changeDetails = changeInstance.changeDetails(for: photoAlbum.fetchResult) {
                 photoAlbum.changeWithDetails(changeDetails)
             }

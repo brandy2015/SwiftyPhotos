@@ -10,7 +10,30 @@ import UIKit
 import Photos
 
 public class PhotoAlbumsCell: UITableViewCell {
-
+    
+    public var imageRequestID: PHImageRequestID?
+    
+    public var albumModel: PhotoAlbumModel! {
+        didSet {
+            DispatchQueue.main.async {
+                self.lbTitle.text = self.albumModel.name
+                self.lbCount.text = "\(self.albumModel.photoAssets.count)"
+            }
+        
+            imageRequestID = albumModel.lastPhotoAsset?.requestThumbnail(resultHandler: { (image, info) in
+                guard let image = image, let info = info else { return }
+                guard let requestID = info[PHImageResultRequestIDKey] as? NSNumber else { return }
+                if requestID.int32Value == self.imageRequestID {
+                    DispatchQueue.main.async {
+                        self.iconView.image = image
+                    }
+                }
+            })
+        }
+    }
+    
+    // MARK: - subViews
+    
     public lazy var iconView: UIImageView = {
         let v = UIImageView(frame: CGRect(x: 10.0, y: 10.0, width: 40.0, height: 40.0))
         v.contentMode = .scaleAspectFill
@@ -32,41 +55,16 @@ public class PhotoAlbumsCell: UITableViewCell {
         return v
     }()
     
-    public var imageRequestID: PHImageRequestID?
-    
-    public var albumModel: PhotoAlbumModel! {
-        didSet {
-            DispatchQueue.main.async {
-                self.lbTitle.text = self.albumModel.name
-                self.lbCount.text = "\(self.albumModel.photoAssets.count)"
-            }
-        
-            self.imageRequestID = self.albumModel.lastPhotoAsset?.requestThumbnail(resultHandler: { (image, info) in
-                DispatchQueue.main.async {
-                    if let image = image, let info = info {
-                        if let requestID = info[PHImageResultRequestIDKey] as? NSNumber {
-                            if requestID.int32Value == self.imageRequestID {
-                                self.iconView.image = image
-                            }
-                        }
-                    } else {
-                        self.iconView.image = nil
-                    }
-                }
-            })
-        }
-    }
-    
     public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        self.backgroundColor = UIColor.white
-        self.isExclusiveTouch = true
-        self.clipsToBounds = true
+        backgroundColor = UIColor.white
+        isExclusiveTouch = true
+        clipsToBounds = true
         
-        self.addSubview(self.iconView)
-        self.addSubview(self.lbTitle)
-        self.addSubview(self.lbCount)
+        addSubview(iconView)
+        addSubview(lbTitle)
+        addSubview(lbCount)
     }
     
     public required init?(coder aDecoder: NSCoder) {

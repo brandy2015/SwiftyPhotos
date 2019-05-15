@@ -18,6 +18,8 @@ public class PhotoAlbumsView: UIView {
 
     public weak var delegate: PhotoAlbumsViewDelegate?
     
+    // MARK: - subViews
+    
     private lazy var tableView: UITableView = {
         let tableView: UITableView = UITableView(frame: self.bounds, style: .plain)
         
@@ -32,7 +34,7 @@ public class PhotoAlbumsView: UIView {
     public override init(frame: CGRect) {
         super.init(frame: frame)
         
-        self.addSubview(self.tableView)
+        addSubview(tableView)
     }
     
     public required init?(coder aDecoder: NSCoder) {
@@ -40,6 +42,8 @@ public class PhotoAlbumsView: UIView {
     }
     
 }
+
+// MARK: - UITableViewDataSource
 
 extension PhotoAlbumsView: UITableViewDataSource {
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -55,11 +59,11 @@ extension PhotoAlbumsView: UITableViewDataSource {
     }
 }
 
+// MARK: - UITableViewDelegate
+
 extension PhotoAlbumsView: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let delegate = self.delegate {
-            let photoAlbum = SwiftyPhotos.shared.allAlbums[indexPath.row]
-            delegate.PhotoAlbumsViewDidSelectPhotoAlbum(photoAlbum)
-        }
+        let photoAlbum = SwiftyPhotos.shared.allAlbums[indexPath.row]
+        delegate?.PhotoAlbumsViewDidSelectPhotoAlbum(photoAlbum)
     }
 }

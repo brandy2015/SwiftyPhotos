@@ -148,8 +148,8 @@
 		A4B92DBA1FD7A98800DA5A78 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				A4B92DBB1FD7A98800DA5A78 /* PhotoAlbumsCell.swift */,
 				A4B92DBD1FD7A98800DA5A78 /* PhotoAlbumsView.swift */,
+				A4B92DBB1FD7A98800DA5A78 /* PhotoAlbumsCell.swift */,
 				A446E30A20B70F4D0044710F /* PhotoAssetsView.swift */,
 				A4B92DBE1FD7A98800DA5A78 /* PhotoAssetsCell.swift */,
 				A4CEEFB420BFB83C00067290 /* ZoomImageView.swift */,

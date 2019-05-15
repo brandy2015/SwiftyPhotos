@@ -13,10 +13,18 @@ public class ZoomImageView: UIView {
 
     public var image: UIImage? {
         didSet {
-            self.imageView.image = self.image
+            imageView.image = image
         }
     }
-
+    
+    // double tap to room
+    fileprivate lazy var tapGesture: UITapGestureRecognizer = {
+        let g = UITapGestureRecognizer(target: self, action: #selector(_actionTapGesture(_:)))
+        g.numberOfTapsRequired = 2
+        return g
+    }()
+    
+    // MARK: - subViews
     fileprivate lazy var imageView: UIImageView = {
         let v = UIImageView(frame: self.bounds)
         v.contentMode = .scaleAspectFit
@@ -34,34 +42,31 @@ public class ZoomImageView: UIView {
         return v
     }()
     
-    // double tap to room
-    fileprivate lazy var tapGesture: UITapGestureRecognizer = {
-        let g = UITapGestureRecognizer(target: self, action: #selector(_actionTapGesture(_:)))
-        g.numberOfTapsRequired = 2
-        return g
-    }()
-    
     public override init(frame: CGRect) {
         super.init(frame: frame)
         
-        self.addSubview(self.scrollView)
-        self.scrollView.addSubview(self.imageView)
+        addSubview(scrollView)
+        scrollView.addSubview(imageView)
         
-        self.addGestureRecognizer(self.tapGesture)
+        addGestureRecognizer(tapGesture)
     }
     
     public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+}
+
+// MARK: - Actions
+
+public extension ZoomImageView {
     @objc
     private func _actionTapGesture(_ sender: UITapGestureRecognizer) {
         let touchPoint = sender.location(in: self)
-        if self.scrollView.zoomScale > self.scrollView.minimumZoomScale {
-            self.scrollView.setZoomScale(self.scrollView.minimumZoomScale, animated: true)
+        if scrollView.zoomScale > scrollView.minimumZoomScale {
+            scrollView.setZoomScale(scrollView.minimumZoomScale, animated: true)
         } else {
-            let rect = self._zoomRectWithPoint(point: touchPoint, tScale: self.scrollView.maximumZoomScale)
-            self.scrollView.zoom(to: rect, animated: true)
+            let rect = _zoomRectWithPoint(point: touchPoint, tScale: scrollView.maximumZoomScale)
+            scrollView.zoom(to: rect, animated: true)
         }
     }
     
@@ -75,8 +80,8 @@ public class ZoomImageView: UIView {
         
         // calculate the offset
         var showSize = CGSize.zero
-        showSize.width = min(frame.width, self.scrollView.frame.width)
-        showSize.height = min(frame.height, self.scrollView.frame.height)
+        showSize.width = min(frame.width, scrollView.frame.width)
+        showSize.height = min(frame.height, scrollView.frame.height)
         
         let scale = showSize.width / showSize.height
         
@@ -90,21 +95,23 @@ public class ZoomImageView: UIView {
     }
 }
 
+// MARK: - UIScrollViewDelegate
+
 extension ZoomImageView: UIScrollViewDelegate {
     
     public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return self.imageView
+        return imageView
     }
     
     public func scrollViewDidZoom(_ scrollView: UIScrollView) {
         // imageView
-        guard let imageView = self.scrollView.subviews.first else { return }
+        guard let imageView = scrollView.subviews.first else { return }
         
-        let offsetX = max((self.scrollView.frame.width - self.scrollView.contentSize.width) * 0.5, 0.0)
-        let offsetY = max((self.scrollView.frame.height - self.scrollView.contentSize.height) * 0.5, 0.0)
+        let offsetX = max((scrollView.frame.width - scrollView.contentSize.width) * 0.5, 0.0)
+        let offsetY = max((scrollView.frame.height - scrollView.contentSize.height) * 0.5, 0.0)
         
-        imageView.center = CGPoint(x: self.scrollView.contentSize.width * 0.5 + offsetX,
-                                   y: self.scrollView.contentSize.height * 0.5 + offsetY)
+        imageView.center = CGPoint(x: scrollView.contentSize.width * 0.5 + offsetX,
+                                   y: scrollView.contentSize.height * 0.5 + offsetY)
     }
     
 }

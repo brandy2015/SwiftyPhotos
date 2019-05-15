@@ -16,26 +16,26 @@ public typealias ProgressHandlerOfRequestPhotoInCloud = (Double, Error?, UnsafeM
 
 public class PhotoAssetModel {
     public var name: String {
-        return self.asset.localIdentifier
+        return asset.localIdentifier
     }
     
     public let asset: PHAsset
     
     public var photoSize: CGSize {
-        return CGSize(width: self.asset.pixelWidth, height: self.asset.pixelHeight)
+        return CGSize(width: asset.pixelWidth, height: asset.pixelHeight)
     }
     
     fileprivate var locallyAvailable = false
     
     public var isInCloud: Bool {
-        if self.locallyAvailable {
+        if locallyAvailable {
             return false
         }
         
         if let assetResource = PHAssetResource.assetResources(for: asset).first {
             if let locallyAvailable = assetResource.value(forKey: "locallyAvailable") as? Bool {
                 self.locallyAvailable = locallyAvailable
-                if self.locallyAvailable == false {
+                if locallyAvailable == false {
                     return true
                 }
             }
@@ -44,7 +44,7 @@ public class PhotoAssetModel {
     }
     
     public var isDownloadingFromCloud: Bool {
-        return self.imageRequestIdInCloud != PHInvalidImageRequestID
+        return PHInvalidImageRequestID != imageRequestIdInCloud
     }
     
     fileprivate var imageRequestIdInCloud: PHImageRequestID = PHInvalidImageRequestID
@@ -59,7 +59,7 @@ public class PhotoAssetModel {
 public extension PhotoAssetModel {
     @discardableResult
     func requestThumbnail(resultHandler: @escaping ResultHandlerOfRequestPhoto) -> PHImageRequestID {
-        return self.requestAvailableSizeImageInCloud(resultHandler: resultHandler)
+        return requestAvailableSizeImageInCloud(resultHandler: resultHandler)
     }
     
     @discardableResult
@@ -67,7 +67,7 @@ public extension PhotoAssetModel {
         let targetSize = CGSize(width: UIScreen.main.bounds.width * 4, height: UIScreen.main.bounds.height * 4)
         let options = PHImageRequestOptions()
         options.deliveryMode = .highQualityFormat
-        return self._requestImage(targetSize: targetSize, contentMode: .aspectFit, options: options, resultHandler: resultHandler)
+        return p_requestImage(targetSize: targetSize, contentMode: .aspectFit, options: options, resultHandler: resultHandler)
     }
     
     @discardableResult
@@ -75,7 +75,7 @@ public extension PhotoAssetModel {
         let targetSize = PHImageManagerMaximumSize
         let options = PHImageRequestOptions()
         options.deliveryMode = .highQualityFormat
-        return self._requestImage(targetSize: targetSize, contentMode: .aspectFit, options: options, resultHandler: resultHandler)
+        return p_requestImage(targetSize: targetSize, contentMode: .aspectFit, options: options, resultHandler: resultHandler)
     }
 }
 
@@ -87,7 +87,7 @@ public extension PhotoAssetModel {
         // the max size of photo without downloading from icloud.
         // the most suitable size of thumbnail
         let targetSize = CGSize(width:256, height:256)
-        return self._requestImage(targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: resultHandler)
+        return p_requestImage(targetSize: targetSize, contentMode: .aspectFit, options: nil, resultHandler: resultHandler)
     }
     
     @discardableResult
@@ -97,34 +97,42 @@ public extension PhotoAssetModel {
         options.isNetworkAccessAllowed = true
         options.deliveryMode = .highQualityFormat
         options.progressHandler = progressHandler
-        self.imageRequestIdInCloud = self._requestImage(targetSize: targetSize, contentMode: .aspectFit, options: options, resultHandler: { [weak self] (image, info) in
-            if let image = image {
+        imageRequestIdInCloud = p_requestImage(targetSize: targetSize, contentMode: .aspectFit, options: options, resultHandler: { [weak self] (image, info) in
+            if let image = image, let strongSelf = self {
                 if image.size.width > 256 && image.size.height > 256 {
-                    self?.locallyAvailable = true
+                    strongSelf.locallyAvailable = true
                     resultHandler(image, info)
                 }
             }
+            
+            return resultHandler(nil, nil)
         })
-        return self.imageRequestIdInCloud
+        return imageRequestIdInCloud
     }
     
     func cancelImageRequestInCloud() {
-        if self.imageRequestIdInCloud != PHInvalidImageRequestID {
-            PHImageManager.default().cancelImageRequest(self.imageRequestIdInCloud)
-            self.imageRequestIdInCloud = PHInvalidImageRequestID
+        if PHInvalidImageRequestID == imageRequestIdInCloud {
+            return
         }
+        
+        PHImageManager.default().cancelImageRequest(imageRequestIdInCloud)
+        imageRequestIdInCloud = PHInvalidImageRequestID
     }
 }
 
+// MARK: - Private
+
 extension PhotoAssetModel {
     @discardableResult
-    fileprivate func _requestImage(targetSize: CGSize, contentMode: PHImageContentMode, options: PHImageRequestOptions?, resultHandler: @escaping ResultHandlerOfRequestPhoto) -> PHImageRequestID {
+    fileprivate func p_requestImage(targetSize: CGSize, contentMode: PHImageContentMode, options: PHImageRequestOptions?, resultHandler: @escaping ResultHandlerOfRequestPhoto) -> PHImageRequestID {
         return PHImageManager.default().requestImage(for: asset, targetSize: targetSize, contentMode: contentMode, options: options, resultHandler: resultHandler)
     }
 }
 
+// MARK: - CustomStringConvertible
+
 extension PhotoAssetModel: CustomStringConvertible {
     public var description: String {
-        return self.name
+        return name
     }
 }

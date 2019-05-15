@@ -15,16 +15,13 @@ public class PhotoAssetsCell: UICollectionViewCell {
     
     public var photoAsset: PhotoAssetModel! {
         didSet {
-            self.imageRequestID = self.photoAsset.requestThumbnail(resultHandler: { [weak self] (image, info) in
-                DispatchQueue.main.async {
-                    if let info = info {
-                        if let requestID = info[PHImageResultRequestIDKey] as? NSNumber {
-                            if let sself = self {
-                                if requestID.int32Value == sself.imageRequestID {
-                                    sself.thumbnail.image = image
-                                }
-                            }
-                        }
+            imageRequestID = photoAsset.requestThumbnail(resultHandler: { [weak self] (image, info) in
+                guard let image = image, let info = info else { return }
+                guard let strongSelf = self else { return }
+                guard let requestID = info[PHImageResultRequestIDKey] as? NSNumber else { return }
+                if requestID.int32Value == strongSelf.imageRequestID {
+                    DispatchQueue.main.async {
+                        strongSelf.thumbnail.image = image
                     }
                 }
             })
@@ -51,6 +48,8 @@ public class PhotoAssetsCell: UICollectionViewCell {
         }
     }
     
+    // MARK: - subViews
+    
     public lazy var thumbnail: UIImageView = {
         let iv = UIImageView(frame: self.bounds)
         iv.contentMode = .scaleAspectFill
@@ -60,9 +59,9 @@ public class PhotoAssetsCell: UICollectionViewCell {
     public override init(frame: CGRect) {
         super.init(frame: frame)
         
-        self.backgroundColor = UIColor.white
-        self.clipsToBounds = true
-        self.addSubview(self.thumbnail)
+        backgroundColor = UIColor.white
+        clipsToBounds = true
+        addSubview(thumbnail)
     }
     
     public required init?(coder aDecoder: NSCoder) {

@@ -17,7 +17,10 @@ public protocol PhotoAlbumDelegate: class {
 
 public class PhotoAlbumModel {
     public var name: String {
-        return self.assetCollection.localizedTitle!
+        if let localizedTitle = assetCollection.localizedTitle {
+            return localizedTitle
+        }
+        return ""
     }
     
     public let assetCollection: PHAssetCollection
@@ -26,7 +29,7 @@ public class PhotoAlbumModel {
     public var photoAssets = [PhotoAssetModel]()
     
     public var lastPhotoAsset: PhotoAssetModel? {
-        return self.photoAssets.last
+        return photoAssets.last
     }
     
     public weak var delegate: PhotoAlbumDelegate?
@@ -36,30 +39,31 @@ public class PhotoAlbumModel {
         
         let options = PHFetchOptions()
         options.predicate = NSPredicate(format: "mediaType=1")
-        self.fetchResult = PHAsset.fetchAssets(in: self.assetCollection, options: options)
+        self.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: options)
         
-        self.reloadPhotoAssets()
+        reloadPhotoAssets()
     }
     
     public func changeWithDetails(_ changeDetails: PHFetchResultChangeDetails<PHAsset>) {
-        self.fetchResult = changeDetails.fetchResultAfterChanges
+        fetchResult = changeDetails.fetchResultAfterChanges
         
-        self.reloadPhotoAssets()
+        reloadPhotoAssets()
         
-        self.delegate?.PhotoAlbumChangeWithDetails(changeDetails)
+        delegate?.PhotoAlbumChangeWithDetails(changeDetails)
     }
     
     fileprivate func reloadPhotoAssets() {
-        self.photoAssets.removeAll()
-        self.fetchResult.enumerateObjects( { (asset, idx, stop) in
+        photoAssets.removeAll()
+        fetchResult.enumerateObjects( { (asset, idx, stop) in
             let photoAssetModel = PhotoAssetModel.init(asset)
             self.photoAssets.append(photoAssetModel)
         })
     }
 }
 
+// MARK: - CustomStringConvertible
 extension PhotoAlbumModel: CustomStringConvertible {
     public var description: String {
-        return self.name
+        return name
     }
 }

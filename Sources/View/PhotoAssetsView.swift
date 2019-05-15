@@ -31,6 +31,8 @@ public class PhotoAssetsView: UIView {
     // offset between cells
     fileprivate let cellOffset: CGFloat
     
+    // MARK: - subViews
+    
     public lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
@@ -60,65 +62,66 @@ public class PhotoAssetsView: UIView {
         
         super.init(frame: frame)
         
-        self.photoAlbum.delegate = self
+        photoAlbum.delegate = self
         
-        if self.isKeepingPhotoRatio {
-            self.setupPhotoRatios()
+        if isKeepingPhotoRatio {
+            setupPhotoRatios()
         }
         
-        self.addSubview(self.collectionView)
+        addSubview(collectionView)
         
-        self.scrollsToBottom()
+        scrollsToBottom()
     }
     
     public func reload(_ photoAlbum: PhotoAlbumModel) {
         self.photoAlbum = photoAlbum
-        self.collectionView.reloadData()
+        collectionView.reloadData()
         
-        self.scrollsToBottom()
+        scrollsToBottom()
     }
     
     private func scrollsToBottom() {
-        let count = self.photoAlbum.photoAssets.count
-        if count > 1 {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
-                self.collectionView.scrollToItem(at: IndexPath(item: count - 1, section: 0), at: .centeredVertically, animated: false)
-            })
-        }
+        let count = photoAlbum.photoAssets.count
+        if count <= 1 { return }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
+            self.collectionView.scrollToItem(at: IndexPath(item: count - 1, section: 0), at: .centeredVertically, animated: false)
+        })
     }
     
     fileprivate func setupPhotoRatios() {
-        self.photoRatios.removeAll()
-        for (_, photoAsset) in self.photoAlbum.photoAssets.enumerated() {
-            self.photoRatios.append(photoAsset.photoSize.height / photoAsset.photoSize.width)
+        photoRatios.removeAll()
+        photoRatios = photoAlbum.photoAssets.map { (photoAsset) -> CGFloat in
+            let photoSize = photoAsset.photoSize
+            if photoSize.width <= 0 { return 1.0 }
+            return photoSize.height / photoSize.width
         }
         
-        let lineCount = self.photoRatios.count / self.cellCountOfLine
+        let lineCount = photoRatios.count / cellCountOfLine
         for i in 0 ..< lineCount {
             var arr = [CGFloat]()
-            for j in 0 ..< self.cellCountOfLine {
-                arr.append(self.photoRatios[self.cellCountOfLine * i + j])
+            for j in 0 ..< cellCountOfLine {
+                arr.append(photoRatios[cellCountOfLine * i + j])
             }
-            let finalRatio = self._maxValueForAll(arr: arr)
-            for k in 0 ..< self.cellCountOfLine {
-                self.photoRatios[self.cellCountOfLine * i + k] = finalRatio
+            let finalRatio = p_maxValueForAll(arr: arr)
+            for k in 0 ..< cellCountOfLine {
+                photoRatios[cellCountOfLine * i + k] = finalRatio
             }
         }
         
-        let others = self.photoRatios.count % self.cellCountOfLine
+        let others = photoRatios.count % cellCountOfLine
         if others > 1 {
             var arr = [CGFloat]()
             for i in 0 ..< others {
-                arr.append(self.photoRatios[self.cellCountOfLine * lineCount + i])
+                arr.append(photoRatios[cellCountOfLine * lineCount + i])
             }
-            let finalRatio = self._maxValueForAll(arr: arr)
+            let finalRatio = p_maxValueForAll(arr: arr)
             for j in 0 ..< others {
-                self.photoRatios[self.cellCountOfLine * lineCount + j] = finalRatio
+                photoRatios[cellCountOfLine * lineCount + j] = finalRatio
             }
         }
     }
     
-    private func _maxValueForAll(arr: [CGFloat]) -> CGFloat {
+    private func p_maxValueForAll(arr: [CGFloat]) -> CGFloat {
         var maxValue: CGFloat = 0.0
         for (_, v) in arr.enumerated() {
             if v > maxValue {
@@ -137,15 +140,15 @@ public class PhotoAssetsView: UIView {
 
 extension PhotoAssetsView: UICollectionViewDataSource {
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.photoAlbum.photoAssets.count
+        return photoAlbum.photoAssets.count
     }
 
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoAssetsCell", for: indexPath) as! PhotoAssetsCell
         
-        cell.isKeepingPhotoRatio = self.isKeepingPhotoRatio
+        cell.isKeepingPhotoRatio = isKeepingPhotoRatio
         
-        cell.photoAsset = self.photoAlbum.photoAssets[indexPath.item]
+        cell.photoAsset = photoAlbum.photoAssets[indexPath.item]
         
         return cell
     }
@@ -155,7 +158,7 @@ extension PhotoAssetsView: UICollectionViewDataSource {
 
 extension PhotoAssetsView: UICollectionViewDelegate {
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        self.delegate?.PhotoAssetsViewDidSelectPhotoInAlbum(self.photoAlbum, at: indexPath)
+        delegate?.PhotoAssetsViewDidSelectPhotoInAlbum(photoAlbum, at: indexPath)
     }
 }
 
@@ -164,12 +167,12 @@ extension PhotoAssetsView: UICollectionViewDelegate {
 extension PhotoAssetsView: UICollectionViewDelegateFlowLayout {
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         // in case items can not be displayed in one line
-        let itemWidth = (collectionView.frame.width - self.cellOffset * CGFloat(self.cellCountOfLine - 1) - 1.0) / CGFloat(self.cellCountOfLine)
+        let itemWidth = (collectionView.frame.width - cellOffset * CGFloat(cellCountOfLine - 1) - 1.0) / CGFloat(cellCountOfLine)
         
         // height for photo
         var itemHeight: CGFloat
-        if self.isKeepingPhotoRatio {
-            itemHeight = itemWidth * self.photoRatios[indexPath.item]
+        if isKeepingPhotoRatio {
+            itemHeight = itemWidth * photoRatios[indexPath.item]
         } else {
             itemHeight = itemWidth
         }
@@ -182,8 +185,8 @@ extension PhotoAssetsView: UICollectionViewDelegateFlowLayout {
 
 extension PhotoAssetsView: PhotoAlbumDelegate {
     public func PhotoAlbumChangeWithDetails(_ changeDetails: PHFetchResultChangeDetails<PHAsset>) {
-        if self.isKeepingPhotoRatio {
-            self.setupPhotoRatios()
+        if isKeepingPhotoRatio {
+            setupPhotoRatios()
         }
         DispatchQueue.main.async {
             self.collectionView.reloadData()

@@ -19,26 +19,37 @@ class PhotoAssetsViewController: UIViewController {
         }
     }
     
-    // MARK: - toolBar
-    fileprivate lazy var toolBar: UIView = {
-        let height: CGFloat = 40.0
-        let v: UIView = UIView(frame: CGRect(x: 0,
-                                             y: self.view.frame.height - height,
-                                             width: self.view.frame.width,
-                                             height: height))
-        v.backgroundColor = UIColor.white
-        return v
-    }()
-    fileprivate lazy var lbTitle: UILabel = {
-        let height = self.toolBar.frame.height
-        let lb: UILabel = UILabel(frame:CGRect(x: height,
-                                               y: 0,
-                                               width: self.toolBar.frame.width - height * 2,
-                                               height: height))
-        lb.textColor = UIColor.black
-        lb.textAlignment = .center
-        return lb
-    }()
+    // albums tableView 是否显示
+    
+    fileprivate var isPhotoAlbumsViewShown: Bool = true {
+        didSet {
+            if isPhotoAlbumsViewShown == true {
+                lbTitle.text = "▽ \(photoAlbum.name)"
+                
+                photosAlbumsMaskView.isHidden = false
+                
+                UIView.animate(withDuration: 0.3,
+                               delay: 0,
+                               usingSpringWithDamping: 1,
+                               initialSpringVelocity: 1,
+                               options: .curveEaseInOut,
+                               animations: {
+                                self.photosAlbumsMaskView.backgroundColor = UIColor.black
+                                self.photoAlbumsView.transform = CGAffineTransform.identity
+                }, completion: nil)
+            } else {
+                lbTitle.text = "△ \(photoAlbum.name)"
+                
+                UIView.animate(withDuration: 0.3, animations: {
+                    self.photosAlbumsMaskView.backgroundColor = UIColor.clear
+                    self.photoAlbumsView.transform = CGAffineTransform(translationX: 0,
+                                                                       y: UIScreen.main.bounds.height - self.photoAlbumsView.frame.minY)
+                }, completion: { (finished) in
+                    self.photosAlbumsMaskView.isHidden = true
+                })
+            }
+        }
+    }
     
     // MARK: - gestures
     
@@ -53,13 +64,34 @@ class PhotoAssetsViewController: UIViewController {
         return g
     }()
     
+    // MARK: - subViews
+    fileprivate lazy var toolBar: UIView = {
+        let height: CGFloat = 40.0
+        let v: UIView = UIView(frame: CGRect(x: 0,
+                                             y: view.frame.height - height,
+                                             width: view.frame.width,
+                                             height: height))
+        v.backgroundColor = UIColor.white
+        return v
+    }()
+    fileprivate lazy var lbTitle: UILabel = {
+        let height = toolBar.frame.height
+        let lb: UILabel = UILabel(frame:CGRect(x: height,
+                                               y: 0,
+                                               width: toolBar.frame.width - height * 2,
+                                               height: height))
+        lb.textColor = UIColor.black
+        lb.textAlignment = .center
+        return lb
+    }()
+    
     // MARK: - PhotoAlbumsView
     
     fileprivate lazy var photoAlbumsView: PhotoAlbumsView = {
-        let height = (self.view.frame.height - self.toolBar.frame.height) / 2
+        let height = (view.frame.height - toolBar.frame.height) / 2
         let frame = CGRect(x: 0,
-                           y: self.view.frame.height - self.toolBar.frame.height - height,
-                           width: self.view.frame.width,
+                           y: view.frame.height - toolBar.frame.height - height,
+                           width: view.frame.width,
                            height: height)
         let view: PhotoAlbumsView = PhotoAlbumsView(frame: frame)
         return view
@@ -67,8 +99,8 @@ class PhotoAssetsViewController: UIViewController {
     fileprivate lazy var photosAlbumsMaskView: UIView = {
         let frame = CGRect(x: 0,
                            y: 0,
-                           width: self.view.frame.width,
-                           height: self.view.frame.height - self.toolBar.frame.height)
+                           width: view.frame.width,
+                           height: view.frame.height - toolBar.frame.height)
         let v: UIView = UIView(frame: frame)
         v.alpha = 0.6
         return v
@@ -77,48 +109,19 @@ class PhotoAssetsViewController: UIViewController {
     // MARK: - PhotoAssetsView
     
     fileprivate lazy var photoAssetsView: PhotoAssetsView = {
-        let height = self.toolBar.frame.height
+        let height = toolBar.frame.height
         let frame = CGRect(x: 0,
                            y: 0,
-                           width: self.view.frame.width,
-                           height: self.view.frame.height - height)
-        let view = PhotoAssetsView(frame: frame, photoAlbum: self.photoAlbum, isKeepingPhotoRatio: false, cellCountOfLine: 3, cellOffset: 2.0)
+                           width: view.frame.width,
+                           height: view.frame.height - height)
+        let view = PhotoAssetsView(frame: frame, photoAlbum: photoAlbum, isKeepingPhotoRatio: false, cellCountOfLine: 3, cellOffset: 2.0)
         return view
     }()
-    
-    // albums tableView 是否显示
-    
-    fileprivate var isPhotoAlbumsViewShown: Bool = true {
-        didSet {
-            if self.isPhotoAlbumsViewShown == true {
-                self.lbTitle.text = "▽ \(self.photoAlbum.name)"
-                
-                self.photosAlbumsMaskView.isHidden = false
-                
-                UIView.animate(withDuration: 0.3,
-                               delay: 0,
-                               usingSpringWithDamping: 1,
-                               initialSpringVelocity: 1,
-                               options: .curveEaseInOut,
-                               animations: {
-                                self.photosAlbumsMaskView.backgroundColor = UIColor.black
-                                self.photoAlbumsView.transform = CGAffineTransform.identity
-                }, completion: nil)
-            } else {
-                self.lbTitle.text = "△ \(self.photoAlbum.name)"
-                
-                UIView.animate(withDuration: 0.3, animations: {
-                    self.photosAlbumsMaskView.backgroundColor = UIColor.clear
-                    self.photoAlbumsView.transform = CGAffineTransform(translationX: 0,
-                                                                       y: UIScreen.main.bounds.height - self.photoAlbumsView.frame.minY)
-                }, completion: { (finished) in
-                    self.photosAlbumsMaskView.isHidden = true
-                })
-            }
-        }
-    }
-    
-    // MARK: - lifecycle
+}
+
+// MARK: - LifeCycle
+
+extension PhotoAssetsViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -158,30 +161,31 @@ class PhotoAssetsViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        self.addGestures()
+        addGestures()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        self.removeGestures()
+        removeGestures()
     }
 }
 
-// MARK: - setupUI
+// MARK: - UI
+
 extension PhotoAssetsViewController {
     fileprivate func setupUI() {
-        self.view.backgroundColor = UIColor.white
+        view.backgroundColor = UIColor.white
         
-        self.view.addSubview(self.photoAssetsView)
-        self.photoAssetsView.delegate = self
+        view.addSubview(photoAssetsView)
+        photoAssetsView.delegate = self
         
-        self.view.addSubview(self.photosAlbumsMaskView)
-        self.view.addSubview(self.photoAlbumsView)
-        self.photoAlbumsView.delegate = self
+        view.addSubview(photosAlbumsMaskView)
+        view.addSubview(photoAlbumsView)
+        photoAlbumsView.delegate = self
         
-        self.view.addSubview(self.toolBar)
-        self.toolBar.addSubview(self.lbTitle)
+        view.addSubview(toolBar)
+        toolBar.addSubview(lbTitle)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.isPhotoAlbumsViewShown = false
@@ -189,24 +193,25 @@ extension PhotoAssetsViewController {
     }
 }
 
-// MARK: - gestures
+// MARK: - Gestures
+
 extension PhotoAssetsViewController {
     fileprivate func addGestures() {
-        self.lbTitle.isUserInteractionEnabled = true
-        self.lbTitle.addGestureRecognizer(self.tapGestureShowOrHideAlbumsToolBar)
+        lbTitle.isUserInteractionEnabled = true
+        lbTitle.addGestureRecognizer(tapGestureShowOrHideAlbumsToolBar)
         
-        self.photosAlbumsMaskView.isUserInteractionEnabled = true
-        self.photosAlbumsMaskView.addGestureRecognizer(self.tapGestureShowOrHideAlbumsMaskView)
+        photosAlbumsMaskView.isUserInteractionEnabled = true
+        photosAlbumsMaskView.addGestureRecognizer(tapGestureShowOrHideAlbumsMaskView)
     }
     
     fileprivate func removeGestures() {
-        self.lbTitle.removeGestureRecognizer(self.tapGestureShowOrHideAlbumsToolBar)
-        self.photosAlbumsMaskView.removeGestureRecognizer(self.tapGestureShowOrHideAlbumsMaskView)
+        lbTitle.removeGestureRecognizer(tapGestureShowOrHideAlbumsToolBar)
+        photosAlbumsMaskView.removeGestureRecognizer(tapGestureShowOrHideAlbumsMaskView)
     }
     
     @objc
     fileprivate func actionShowOrHideAlbums(_ sender: UITapGestureRecognizer) {
-        self.isPhotoAlbumsViewShown = !self.isPhotoAlbumsViewShown
+        isPhotoAlbumsViewShown = !isPhotoAlbumsViewShown
     }
 }
 
@@ -214,10 +219,10 @@ extension PhotoAssetsViewController {
 
 extension PhotoAssetsViewController: PhotoAlbumsViewDelegate {
     func PhotoAlbumsViewDidSelectPhotoAlbum(_ photoAlbum: PhotoAlbumModel) {
-        if self.photoAlbum.name != photoAlbum.name {
+        if photoAlbum.name != photoAlbum.name {
             self.photoAlbum = photoAlbum
         }
-        self.isPhotoAlbumsViewShown = false
+        isPhotoAlbumsViewShown = false
     }
 }
 
@@ -228,7 +233,7 @@ extension PhotoAssetsViewController: PhotoAssetsViewDelegate {
         let photoDetailVC = PhotoDetailViewController()
         let photoAsset = photoAlbum.photoAssets[indexPath.item]
         photoDetailVC.photoAsset = photoAsset
-        self.present(photoDetailVC, animated: true, completion: nil)
+        present(photoDetailVC, animated: true, completion: nil)
     }
 }
 
