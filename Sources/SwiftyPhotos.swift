@@ -86,9 +86,6 @@ public extension SwiftyPhotos {
     
     fileprivate func p_reloadAll() {
         let handleAssetCollection = { (assetCollection: PHAssetCollection) in
-            let options = PHFetchOptions()
-            options.predicate = NSPredicate(format: "mediaType=1")
-            
             let photoAlbum = PhotoAlbumModel(assetCollection)
             self.allAlbums.append(photoAlbum)
         }

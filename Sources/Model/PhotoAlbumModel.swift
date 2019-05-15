@@ -38,7 +38,7 @@ public class PhotoAlbumModel {
         self.assetCollection = assetCollection
         
         let options = PHFetchOptions()
-        options.predicate = NSPredicate(format: "mediaType=1")
+        options.predicate = NSPredicate(format: "mediaType=\(PHAssetMediaType.image.rawValue)")
         self.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: options)
         
         reloadPhotoAssets()
@@ -55,7 +55,7 @@ public class PhotoAlbumModel {
     fileprivate func reloadPhotoAssets() {
         photoAssets.removeAll()
         fetchResult.enumerateObjects( { (asset, idx, stop) in
-            let photoAssetModel = PhotoAssetModel.init(asset)
+            let photoAssetModel = PhotoAssetModel(asset)
             self.photoAssets.append(photoAssetModel)
         })
     }
