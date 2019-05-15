@@ -146,7 +146,7 @@ extension PhotoAssetsViewController {
                     let goSettings = UIAlertAction(title: "Go to Settings", style: .default, handler: { (alertAction) in
                         print("go to settings")
                         if let url = URL(string: UIApplication.openSettingsURLString) {
-                            UIApplication.shared.open(url, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
+                            UIApplication.shared.open(url, options: [:], completionHandler: nil)
                         }
                     })
                     let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
@@ -235,9 +235,4 @@ extension PhotoAssetsViewController: PhotoAssetsViewDelegate {
         photoDetailVC.photoAsset = photoAsset
         present(photoDetailVC, animated: true, completion: nil)
     }
-}
-
-// Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
-	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
 }
